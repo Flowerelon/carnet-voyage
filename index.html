@@ -1,0 +1,1904 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#EEF2F6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Carnet">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Carnet Hanoï–Tokyo</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root {
+    --ground: #EEF2F6;
+    --paper: #FFFFFF;
+    --glass: rgba(255, 255, 255, .78);
+    --glass-strong: rgba(255, 255, 255, .92);
+    --ink: #0F1728;
+    --muted: #5A6577;
+    --line: rgba(15, 23, 40, .11);
+    --line-strong: rgba(15, 23, 40, .18);
+    --accent: #5B45E0;
+    --accent-soft: rgba(91, 69, 224, .12);
+    --accent-ink: #FFFFFF;
+    --jade: #0B8A70;
+    --jade-soft: rgba(11, 138, 112, .13);
+    --lantern: #C45F08;
+    --lantern-dot: #FF8A1F;
+    --lantern-soft: rgba(255, 138, 31, .16);
+    --later-soft: rgba(15, 23, 40, .06);
+    --sky-top: #CFE0EC;
+    --sky-bottom: #F4F7FA;
+    --fog: #E3ECF3;
+    --shadow: 0 10px 30px rgba(15, 23, 40, .14), 0 2px 6px rgba(15, 23, 40, .06);
+    --display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --body: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --grab-h: 104px;
+    --radius: 22px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0B111C;
+      --paper: #151D2B;
+      --glass: rgba(19, 26, 40, .78);
+      --glass-strong: rgba(19, 26, 40, .93);
+      --ink: #EAF0F8;
+      --muted: #9AA6B8;
+      --line: rgba(234, 240, 248, .10);
+      --line-strong: rgba(234, 240, 248, .18);
+      --accent: #9C8CFF;
+      --accent-soft: rgba(156, 140, 255, .16);
+      --accent-ink: #120E2A;
+      --jade: #45C8AC;
+      --jade-soft: rgba(69, 200, 172, .15);
+      --lantern: #FFA24D;
+      --lantern-dot: #FF9A3C;
+      --lantern-soft: rgba(255, 154, 60, .17);
+      --later-soft: rgba(234, 240, 248, .07);
+      --sky-top: #070C16;
+      --sky-bottom: #16213A;
+      --fog: #111A2C;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .3);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0B111C;
+    --paper: #151D2B;
+    --glass: rgba(19, 26, 40, .78);
+    --glass-strong: rgba(19, 26, 40, .93);
+    --ink: #EAF0F8;
+    --muted: #9AA6B8;
+    --line: rgba(234, 240, 248, .10);
+    --line-strong: rgba(234, 240, 248, .18);
+    --accent: #9C8CFF;
+    --accent-soft: rgba(156, 140, 255, .16);
+    --accent-ink: #120E2A;
+    --jade: #45C8AC;
+    --jade-soft: rgba(69, 200, 172, .15);
+    --lantern: #FFA24D;
+    --lantern-dot: #FF9A3C;
+    --lantern-soft: rgba(255, 154, 60, .17);
+    --later-soft: rgba(234, 240, 248, .07);
+    --sky-top: #070C16;
+    --sky-bottom: #16213A;
+    --fog: #111A2C;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .3);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+  a { color: var(--accent); }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  svg.i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ================= scène ================= */
+  #stage {
+    position: fixed; inset: 0;
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 70%);
+    touch-action: none;
+  }
+  #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  #flat { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .loading-map {
+    position: absolute; left: 50%; top: 32%; transform: translate(-50%, -50%);
+    font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  /* marqueurs HTML projetés */
+  .mk {
+    position: absolute; left: 0; top: 0;
+    display: flex; flex-direction: column; align-items: center;
+    pointer-events: auto; cursor: pointer;
+    border: 0; background: none; padding: 0;
+    will-change: transform;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mk .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 9px 3px;
+    border-radius: 999px;
+    background: var(--glass-strong);
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 4px 14px rgba(15, 23, 40, .16);
+    font-family: var(--display); font-weight: 800; font-size: 14.5px; letter-spacing: .04em; line-height: 1.05;
+    text-transform: uppercase; white-space: nowrap; color: var(--ink);
+  }
+  .mk .tag small { font-family: var(--body); font-weight: 700; font-size: 10px; letter-spacing: .08em; opacity: .75; }
+  .mk .stem { width: 2px; height: 10px; background: var(--ink); opacity: .45; }
+  .mk .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2.5px solid var(--ink); box-shadow: 0 2px 6px rgba(0, 0, 0, .25); }
+  .mk.done .tag { color: var(--muted); }
+  .mk.done .dot { background: var(--jade); border-color: var(--paper); }
+  .mk.next .tag { border-color: var(--accent); color: var(--accent); }
+  .mk.next .dot { border-color: var(--accent); }
+  .mk.current .tag { background: var(--lantern-dot); border-color: transparent; color: #1B0E00; box-shadow: 0 6px 18px rgba(255, 138, 31, .45); }
+  .mk.current .stem { background: var(--lantern-dot); opacity: 1; }
+  .mk.current .dot { background: var(--lantern-dot); border-color: #fff; }
+  .mk.sel .tag { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mk.poi { pointer-events: none; }
+  .mk.poi .tag { background: transparent; border: 0; box-shadow: none; font-size: 12px; color: var(--ink); opacity: .8; text-shadow: 0 1px 0 var(--sky-bottom), 0 0 6px var(--sky-bottom); padding: 0; }
+  .mk.poi .dot { width: 6px; height: 6px; border-width: 1.5px; }
+  .mk.poi .stem { height: 4px; }
+  .mk.min .tag { display: none; }
+  .mk.min .stem { display: none; }
+
+  /* ================= HUD ================= */
+  .hud {
+    position: fixed; z-index: 10;
+    top: calc(env(safe-area-inset-top, 0px) + 10px); left: 12px; right: 12px;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    pointer-events: none;
+  }
+  .hud > * { pointer-events: auto; }
+  .card-glass {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    backdrop-filter: blur(16px) saturate(1.3);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .daychip { border-radius: 16px; padding: 9px 12px 10px; min-width: 0; max-width: 62vw; }
+  .daychip .d { display: flex; align-items: baseline; gap: 6px; }
+  .daychip .d b { font-family: var(--display); font-weight: 800; font-size: 30px; line-height: .9; text-transform: uppercase; letter-spacing: .01em; }
+  .daychip .d span { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--muted); }
+  .xp { display: flex; gap: 3px; margin-top: 7px; }
+  .xp .seg { display: flex; gap: 1.5px; }
+  .xp .t { width: 4px; height: 7px; border-radius: 1.5px; background: var(--line-strong); }
+  .xp .t.p { background: var(--accent); }
+  .xp .t.n { background: var(--lantern-dot); box-shadow: 0 0 0 2px var(--lantern-soft); }
+  .daychip .sub { margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .levels { display: flex; flex-direction: column; gap: 6px; }
+  .levels .lv { border-radius: 14px; padding: 4px; display: grid; gap: 3px; }
+  .levels button {
+    width: 46px; height: 40px; border: 0; border-radius: 10px; background: transparent; cursor: pointer;
+    font-family: var(--display); font-weight: 800; font-size: 16px; letter-spacing: .03em; color: var(--muted);
+    display: grid; place-items: center;
+  }
+  .levels button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .levels button svg { width: 20px; height: 20px; }
+  .fab {
+    width: 54px; height: 46px; border-radius: 14px; border: 1px solid var(--line); cursor: pointer;
+    display: grid; place-items: center; color: var(--ink);
+  }
+  .fab svg { width: 22px; height: 22px; }
+
+  /* ================= panneau coulissant ================= */
+  .sheet {
+    position: fixed; z-index: 20; left: 0; right: 0; bottom: 0;
+    height: calc(100% - env(safe-area-inset-top, 0px) - 58px);
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: var(--glass-strong);
+    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    backdrop-filter: blur(22px) saturate(1.3);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -10px 40px rgba(15, 23, 40, .16);
+    transform: translateY(calc(100% - var(--vis, 300px)));
+    transition: transform .38s cubic-bezier(.2, .8, .2, 1);
+    display: flex; flex-direction: column;
+  }
+  .sheet.dragging { transition: none; }
+  .grab { flex: none; padding: 8px 12px 10px; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .handle { display: block; width: 42px; height: 5px; border-radius: 3px; background: var(--line-strong); margin: 0 auto 10px; }
+  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; background: var(--later-soft); border-radius: 14px; padding: 4px; }
+  .tabs button {
+    border: 0; background: transparent; border-radius: 10px; cursor: pointer;
+    height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: .02em; color: var(--muted); position: relative;
+  }
+  .tabs button svg { width: 20px; height: 20px; }
+  .tabs button[aria-selected="true"] { background: var(--paper); color: var(--ink); box-shadow: 0 2px 8px rgba(15, 23, 40, .1); }
+  .tabs button[aria-selected="true"] svg { color: var(--accent); }
+  .tabs .badge {
+    position: absolute; top: 5px; right: calc(50% - 20px);
+    min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+    background: var(--lantern-dot); color: #1B0E00; font-size: 10.5px; line-height: 16px; text-align: center; font-weight: 700;
+  }
+  .sheet-body {
+    flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    padding-inline: 16px;
+    padding-block: 4px calc(env(safe-area-inset-bottom, 0px) + 28px);
+    max-height: calc(var(--vis, 300px) - var(--grab-h));
+  }
+  .panel[hidden] { display: none !important; }
+
+  @media (min-width: 900px) {
+    .sheet {
+      left: 16px; right: auto; top: 16px; bottom: 16px; width: 420px; height: auto;
+      border-radius: 22px; border: 1px solid var(--line);
+      transform: none !important;
+      box-shadow: var(--shadow);
+    }
+    .grab { cursor: default; }
+    .handle { display: none; }
+    .sheet-body { max-height: none; }
+    .hud { left: 452px; }
+    .daychip { max-width: 360px; }
+  }
+
+  /* ================= contenus ================= */
+  .kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  h2.big {
+    margin: 2px 0 0;
+    font-family: var(--display); font-weight: 800; font-size: clamp(40px, 11vw, 52px); line-height: .92;
+    text-transform: uppercase; text-wrap: balance;
+  }
+  h3.sec {
+    margin: 22px 0 10px;
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  }
+  h3.sec:first-child { margin-top: 6px; }
+  .here { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--lantern); }
+  .pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--lantern-dot); animation: pulse 2.2s infinite; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 138, 31, .55); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 138, 31, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 138, 31, 0); }
+  }
+  .local { margin: 5px 0 0; color: var(--muted); font-size: 14.5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 999px;
+    background: var(--later-soft); color: var(--ink); white-space: nowrap;
+  }
+  .chip.tent { background: transparent; border: 1px dashed var(--line-strong); color: var(--muted); }
+  .chip.warn { background: var(--lantern-soft); color: var(--lantern); }
+  .chip.ok { background: var(--jade-soft); color: var(--jade); }
+  .chip.acc { background: var(--accent-soft); color: var(--accent); }
+  .chip svg { width: 14px; height: 14px; }
+
+  .rows { display: grid; gap: 1px; margin-top: 14px; border-radius: 16px; overflow: hidden; background: var(--line); }
+  .rowi { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 11px 12px; background: var(--paper); text-align: left; border: 0; width: 100%; cursor: pointer; color: var(--ink); }
+  .rowi .ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--later-soft); }
+  .rowi .ic svg { width: 19px; height: 19px; }
+  .rowi .ic.acc { background: var(--accent-soft); color: var(--accent); }
+  .rowi .ic.warn { background: var(--lantern-soft); color: var(--lantern); }
+  .rowi .t { font-weight: 700; font-size: 15px; line-height: 1.25; }
+  .rowi .s { font-size: 13px; color: var(--muted); margin-top: 1px; }
+  .rowi .r { font-family: var(--mono); font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+  .rowi .chev { color: var(--muted); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    min-height: 46px; padding: 10px 16px; border-radius: 14px;
+    border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink);
+    font-weight: 700; font-size: 15px; cursor: pointer; text-decoration: none;
+  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.ghost { background: transparent; }
+  .btn.small { min-height: 36px; padding: 6px 12px; font-size: 14px; border-radius: 11px; }
+  .btn.block { width: 100%; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn svg { width: 18px; height: 18px; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .actions .btn:only-child { grid-column: 1 / -1; }
+  .confirm { display: grid; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 14px; background: var(--accent-soft); font-size: 14.5px; }
+  .confirm .row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .stat { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px; }
+  .stat .v { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.2; }
+
+  /* tampons = succès */
+  .stamps { display: flex; flex-wrap: wrap; gap: 16px 12px; padding: 6px 2px 4px; }
+  .stamp {
+    --c: var(--accent);
+    display: inline-flex; flex-direction: column; align-items: center;
+    padding: 6px 10px 5px; border: 2.5px solid var(--c); border-radius: 9px;
+    outline: 1px solid var(--c); outline-offset: 2px;
+    color: var(--c); font-family: var(--display); font-weight: 800; text-transform: uppercase; line-height: 1;
+    transform: rotate(var(--r, -6deg)); opacity: .9;
+  }
+  .stamp .s1 { font-size: 17px; letter-spacing: .04em; }
+  .stamp .s2 { font-family: var(--mono); font-weight: 500; font-size: 10px; margin-top: 3px; letter-spacing: .05em; }
+  .stamp.now { --c: var(--lantern); }
+  .stamp.done { --c: var(--jade); }
+  .stamp.locked { --c: var(--line-strong); color: var(--muted); opacity: .55; outline-style: dashed; border-style: dashed; }
+
+  /* étapes */
+  input[type="text"], input[type="date"], input[type="search"], select, textarea {
+    width: 100%; min-height: 46px; padding: 10px 12px;
+    border: 1px solid var(--line-strong); border-radius: 13px;
+    background: var(--paper); font-size: 16px;
+  }
+  textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
+  .search { position: relative; margin-top: 6px; }
+  .search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+  .search input { padding-left: 40px; }
+  .stops { list-style: none; margin: 8px 0 0; padding: 0; }
+  .stop { position: relative; padding-left: 30px; }
+  .stop::before { content: ""; position: absolute; left: 10px; top: 0; bottom: 0; border-left: 2px dotted var(--line-strong); }
+  .stop.done::before { border-left: 2px solid var(--jade); }
+  .stop:first-child::before { top: 24px; }
+  .stop:last-child::before { bottom: calc(100% - 24px); }
+  .stop .dot { position: absolute; left: 3px; top: 17px; width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--muted); }
+  .stop.done .dot { background: var(--jade); border-color: var(--jade); }
+  .stop.current .dot { background: var(--lantern-dot); border-color: var(--lantern-dot); box-shadow: 0 0 0 4px var(--lantern-soft); }
+  .stop.next .dot { border-color: var(--accent); }
+  .stop details { border-bottom: 1px solid var(--line); }
+  .stop summary { list-style: none; cursor: pointer; padding: 11px 0 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; }
+  .stop summary::-webkit-details-marker { display: none; }
+  .stop .when { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .stop .when svg { width: 14px; height: 14px; }
+  .stop .nm { font-family: var(--display); font-weight: 800; font-size: 25px; line-height: 1.02; text-transform: uppercase; }
+  .stop.done .nm { color: var(--muted); }
+  .stopbody { padding: 0 0 16px; display: grid; gap: 12px; }
+  .stopbody .line { font-size: 14px; color: var(--muted); }
+  .stopbody .line b { color: var(--ink); }
+  .hl { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .hl li { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 14px; color: var(--muted); }
+  .hl li b { display: block; font-size: 15px; color: var(--ink); margin-bottom: 1px; }
+  .blk .k { font-size: 11.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .mini { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
+  .mini.warn li::marker { color: var(--lantern); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .editor { display: grid; gap: 10px; padding: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; }
+  .editor .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  label.f { display: grid; gap: 4px; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+  .empty { color: var(--muted); font-size: 14px; padding: 16px; border: 1px dashed var(--line-strong); border-radius: 14px; text-align: center; }
+
+  /* billets */
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tile { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px 11px; }
+  .tile .v { font-family: var(--display); font-size: 32px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tile .k { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.2; }
+  .tile.warn .v { color: var(--lantern); }
+  .tile.ok .v { color: var(--jade); }
+  .tickets { display: grid; gap: 8px; }
+  .tk { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 12px; position: relative; }
+  .tk::after { content: ""; position: absolute; left: 70px; top: 10px; bottom: 10px; border-left: 1.5px dashed var(--line-strong); }
+  .tk .d { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; text-align: center; }
+  .tk .d small { display: block; font-family: var(--body); font-weight: 700; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+  .tk .body { min-width: 0; padding-left: 4px; }
+  .tk .lab { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+  .tk .lab svg { width: 15px; height: 15px; color: var(--muted); }
+  .tk .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .tk .ref { font-family: var(--mono); font-size: 13px; color: var(--ink); }
+  .tk .ctl { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding-top: 9px; border-top: 1px solid var(--line); }
+  .seg2 { display: inline-flex; background: var(--later-soft); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg2 button { border: 0; background: transparent; padding: 5px 9px; border-radius: 8px; font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; }
+  .seg2 button[aria-pressed="true"] { background: var(--paper); color: var(--ink); box-shadow: 0 1px 4px rgba(15, 23, 40, .12); }
+  .tk .refin { width: 118px; min-height: 36px; padding: 5px 9px; font-family: var(--mono); font-size: 14px; text-transform: uppercase; border-radius: 10px; }
+  .copy { border: 0; background: var(--later-soft); border-radius: 7px; padding: 3px 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--ink); }
+
+  /* Claude */
+  .ask { display: grid; gap: 10px; }
+  .qchips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-inline: -16px; padding-inline: 16px; }
+  .qchips::-webkit-scrollbar { display: none; }
+  .qchip { flex: none; max-width: 250px; border: 1px solid var(--line-strong); background: var(--paper); border-radius: 14px; padding: 9px 12px; font-size: 13.5px; cursor: pointer; text-align: left; line-height: 1.3; white-space: normal; }
+  .status { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 9px; }
+  .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--accent); animation: spin .9s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .resume { font-size: 15.5px; margin: 14px 0 0; }
+  .props { display: grid; gap: 10px; margin-top: 12px; }
+  .prop { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 13px; display: grid; gap: 7px; }
+  .prop .top { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .prop .ttl { font-weight: 700; font-size: 16px; line-height: 1.3; }
+  .prop .why { font-size: 14px; color: var(--muted); }
+  .prop .facts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); }
+  .prop .facts b { color: var(--ink); }
+  .prop .verify { font-size: 13px; color: var(--lantern); }
+  .ideas { display: grid; gap: 8px; }
+  .idea { display: grid; gap: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 11px 12px; }
+  .idea.adopte { box-shadow: inset 4px 0 0 var(--jade); }
+  .idea.ecarte { opacity: .5; }
+  .idea .t { font-weight: 700; font-size: 14.5px; }
+  .idea .s { font-size: 12.5px; color: var(--muted); }
+
+  /* carnet */
+  .compose { display: grid; gap: 10px; }
+  .compose .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .photo-prev { max-height: 180px; border-radius: 12px; }
+  .entries { display: grid; gap: 14px; margin-top: 16px; }
+  .entry { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .entry img { display: block; width: 100%; max-height: 420px; object-fit: cover; }
+  .entry .in { padding: 12px 14px 14px; }
+  .entry .hd { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .entry .date { font-family: var(--display); font-weight: 800; font-size: 22px; text-transform: uppercase; }
+  .entry .place { font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .entry p { margin: 6px 0 0; white-space: pre-wrap; font-size: 15px; }
+
+  .colo { margin-top: 30px; font-size: 12.5px; color: var(--muted); display: grid; gap: 8px; }
+  .colo ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+  .note { font-size: 13px; color: var(--muted); }
+
+  #toast {
+    position: fixed; z-index: 40; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 14px); transform: translateX(-50%);
+    background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 14px; font-size: 14px; font-weight: 700;
+    max-width: calc(100% - 32px); box-shadow: var(--shadow);
+  }
+  #toast.bad { background: var(--lantern); color: #1B0E00; }
+
+  @media (max-width: 370px) {
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tabs button { font-size: 10.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse, .spin { animation: none; }
+    .sheet { transition: none; }
+  }
+</style>
+
+<div id="stage" aria-label="Carte en relief du voyage">
+  <canvas id="gl"></canvas>
+  <img id="flat" alt="" hidden>
+  <div id="labels"></div>
+  <div class="loading-map" id="mapLoading"><span class="spin" aria-hidden="true"></span>Relief en chargement</div>
+</div>
+
+<header class="hud">
+  <div class="daychip card-glass" id="daychip">
+    <div class="d"><b id="dayBig">Jour —</b><span id="dayOf"></span></div>
+    <div class="xp" id="xp" aria-hidden="true"></div>
+    <div class="sub" id="daySub"></div>
+  </div>
+  <div class="levels">
+    <div class="lv card-glass" role="group" aria-label="Région de la carte">
+      <button type="button" data-region="vn" aria-pressed="true" title="Vietnam">VN</button>
+      <button type="button" data-region="ph" aria-pressed="false" title="Philippines">PH</button>
+      <button type="button" data-region="jp" aria-pressed="false" title="Japon">JP</button>
+      <button type="button" data-region="all" aria-pressed="false" title="Tout le trajet" aria-label="Tout le trajet">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+      </button>
+    </div>
+    <button class="fab card-glass" type="button" id="recenter" title="Revenir à ma position" aria-label="Revenir à ma position">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/></svg>
+    </button>
+  </div>
+</header>
+
+<section class="sheet" id="sheet" aria-label="Carnet">
+  <div class="grab" id="grab">
+    <span class="handle" aria-hidden="true"></span>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button type="button" role="tab" data-tab="ici" aria-selected="true" aria-controls="p-ici">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Ici</button>
+      <button type="button" role="tab" data-tab="etapes" aria-selected="false" aria-controls="p-etapes">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8 18h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg>Étapes</button>
+      <button type="button" role="tab" data-tab="billets" aria-selected="false" aria-controls="p-billets">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9a2 2 0 0 0 0 4v5h18v-5a2 2 0 0 1 0-4V4H3z"/><path d="M15 4v2M15 10v2M15 16v2"/></svg>Billets<span class="badge" id="bkBadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="claude" aria-selected="false" aria-controls="p-claude">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg>Claude</button>
+      <button type="button" role="tab" data-tab="carnet" aria-selected="false" aria-controls="p-carnet">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M8 3v18M11 8h4M11 12h4"/></svg>Carnet</button>
+    </nav>
+  </div>
+
+  <div class="sheet-body" id="sheetBody">
+    <section class="panel" id="p-ici" role="tabpanel"></section>
+
+    <section class="panel" id="p-etapes" role="tabpanel" hidden>
+      <div class="search">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="search" id="findQ" placeholder="Chercher une destination, un plat, un lieu…" aria-label="Chercher dans les étapes" enterkeyhint="search">
+      </div>
+      <h3 class="sec" id="stopsHead">Étapes</h3>
+      <ol class="stops" id="stops"></ol>
+      <div id="findEmpty"></div>
+    </section>
+
+    <section class="panel" id="p-billets" role="tabpanel" hidden>
+      <div class="tiles" id="bkTiles"></div>
+      <div id="bkGroups"></div>
+    </section>
+
+    <section class="panel" id="p-claude" role="tabpanel" hidden>
+      <form class="ask" id="askForm" autocomplete="off">
+        <h3 class="sec">Améliorer le voyage <span class="note" style="text-transform:none;letter-spacing:0;font-weight:400">Claude connaît ton plan</span></h3>
+        <div class="search">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+          <input type="search" id="askQ" placeholder="Une destination, une question…" aria-label="Question pour Claude" enterkeyhint="send">
+        </div>
+        <select id="askStop" aria-label="Étape visée"></select>
+        <div class="qchips" id="askChips"></div>
+        <div class="row">
+          <button class="btn primary block" type="submit" id="askGo">Proposer des améliorations</button>
+          <button class="btn ghost block" type="button" id="askStop2" hidden>Arrêter</button>
+        </div>
+        <div class="status" id="askStatus" hidden></div>
+      </form>
+      <div id="askOut"></div>
+      <div id="claudeStatic" hidden>
+        <h3 class="sec">Améliorer avec Claude</h3>
+        <p class="local" style="margin:0 0 14px">Les propositions de Claude sur ton plan, les idées gardées et la mise à jour des billets vivent dans ta version privée sur claude.ai.</p>
+        <a class="btn primary block" href="https://claude.ai/artifact/FoBEr7XPL3qjGPkp4MRfiB" target="_blank" rel="noopener">Ouvrir la version Claude</a>
+      </div>
+      <h3 class="sec" id="ideasHead">Idées gardées</h3>
+      <div class="ideas" id="ideas"></div>
+    </section>
+
+    <section class="panel" id="p-carnet" role="tabpanel" hidden>
+      <form class="compose" id="jForm" autocomplete="off">
+        <h3 class="sec">Page du jour</h3>
+        <div class="two">
+          <label class="f">Étape<select id="jStop"></select></label>
+          <label class="f">Date<input type="date" id="jDate"></label>
+        </div>
+        <textarea id="jText" placeholder="Ce que tu as vu, mangé, raté, appris…" aria-label="Texte du jour"></textarea>
+        <img id="jPrev" class="photo-prev" alt="" hidden>
+        <div class="row">
+          <label class="btn small" id="jPhotoLbl" for="jPhoto">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo</label>
+          <input type="file" id="jPhoto" accept="image/*" hidden>
+          <button class="btn small" type="button" id="jPolish">Mettre au propre</button>
+          <span style="flex:1"></span>
+          <button class="btn primary small" type="submit" id="jSave">Ajouter</button>
+        </div>
+        <div class="status" id="jStatus" hidden></div>
+      </form>
+      <div class="entries" id="entries"></div>
+      <div id="carnetStatic" hidden>
+        <h3 class="sec">Carnet</h3>
+        <p class="local" style="margin:0 0 14px">Les pages du carnet et leurs photos restent privées, dans ta version sur claude.ai.</p>
+        <a class="btn primary block" href="https://claude.ai/artifact/FoBEr7XPL3qjGPkp4MRfiB" target="_blank" rel="noopener">Ouvrir le carnet</a>
+      </div>
+    </section>
+
+    <footer class="colo" id="colo"></footer>
+  </div>
+</section>
+
+<div id="toast" role="status" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js" integrity="sha256-80RGv4dbX7Dc2TgZ/+HZ4YLUZjTuhV9dkExsSsfNvJU=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js" integrity="sha256-tMblP5hThTWxH9ZlVifUf7WHezrZclaL/wpwJsS21cQ=" crossorigin="anonymous"></script>
+<script>
+(() => {
+  "use strict";
+
+  /* ================= constantes ================= */
+  const TRIP_START = "2026-09-23";
+  const TRIP_END = "2026-10-27";
+  const PARIS = { lat: 49.01, lon: 2.55 };
+  const COUNTRY = { VN: "Vietnam", PH: "Philippines", JP: "Japon" };
+  const BANDS = [
+    { c: "VN", from: "2026-09-23", to: "2026-10-05" },
+    { c: "PH", from: "2026-10-06", to: "2026-10-19" },
+    { c: "JP", from: "2026-10-20", to: "2026-10-27" },
+  ];
+  const REGIONS = {
+ "vn": {
+  "bounds": {
+   "west": 101.89819,
+   "east": 110.30273,
+   "north": 23.75518,
+   "south": 14.59422
+  },
+  "tex": [
+   1772,
+   2048
+  ],
+  "mesh": [
+   240,
+   277
+  ],
+  "maxE": 2548.7
+ },
+ "ph": {
+  "bounds": {
+   "west": 116.89453,
+   "east": 126.76025,
+   "north": 12.75823,
+   "south": 8.68964
+  },
+  "tex": [
+   2048,
+   860
+  ],
+  "mesh": [
+   260,
+   109
+  ],
+  "maxE": 1789.9
+ },
+ "jp": {
+  "bounds": {
+   "west": 138.44971,
+   "east": 140.7019,
+   "north": 36.25092,
+   "south": 34.94899
+  },
+  "tex": [
+   1600,
+   1138
+  ],
+  "mesh": [
+   200,
+   142
+  ],
+  "maxE": 3458.9
+ },
+ "all": {
+  "bounds": {
+   "west": 96.94336,
+   "east": 146.07422,
+   "north": 40.5138,
+   "south": 2.98693
+  },
+  "tex": [
+   1536,
+   1294
+  ],
+  "mesh": [
+   200,
+   169
+  ],
+  "maxE": 5239.5
+ }
+};
+  // Hauteur du plus haut sommet à l'écran (unités monde, la tuile fait 100 de large), caméra par défaut
+  const LOOK = {
+    vn: { peak: 3.4, dist: 78, focusDist: 44, unit: 1 },
+    ph: { peak: 2.4, dist: 70, focusDist: 40, unit: 1 },
+    jp: { peak: 4.6, dist: 74, focusDist: 50, unit: 1.1 },
+    all: { peak: 2.6, dist: 118, focusDist: 86, unit: 2 },
+  };
+  // Repères de décor (pas des étapes)
+  const POIS = [
+    { r: "vn", name: "Đồng Văn", lat: 23.278, lon: 105.362 },
+    { r: "vn", name: "Mã Pí Lèng", lat: 23.235, lon: 105.41 },
+    { r: "vn", name: "Mèo Vạc", lat: 23.163, lon: 105.407 },
+    { r: "jp", name: "Mont Fuji", lat: 35.3606, lon: 138.7274 },
+    { r: "jp", name: "Narita", lat: 35.772, lon: 140.393 },
+    { r: "ph", name: "Manille →", lat: 12.55, lon: 121.6 },
+  ];
+  // Tracé de la boucle de Ha Giang (3 jours) dessiné autour de l'étape
+  const LOOP = [[22.823, 104.984], [23.07, 104.985], [23.12, 105.14], [23.278, 105.362], [23.235, 105.41], [23.163, 105.407], [23.12, 105.14], [22.823, 104.984]];
+  // Version publique (GitHub Pages) : instantané sans base ni Claude ; null dans la version claude.ai
+  const STATIC = {"stops": [{"id": "hanoi1", "order": 1, "name": "Hanoï", "short": "Hanoï", "country": "VN", "start": "2026-09-23", "end": "2026-09-23", "nights": 0, "lat": 21.03, "lon": 105.85, "status": "done", "via": "plane", "local": "Hanoï · 1er passage (23/09)", "highlights": [{"title": "Ba Đình", "detail": "Palais présidentiel + maison sur pilotis (40 000 VND), pagode au pilier unique, lever du drapeau 06h."}, {"title": "Temple Ngọc Sơn", "detail": "50 000 VND en espèces, ouvert 07h-18h en semaine."}, {"title": "Train Street", "detail": "Créneau fiable 19h-20h, tu entres en client d'un café du vieux quartier."}]}, {"id": "hagiang", "order": 2, "name": "Boucle de Ha Giang", "short": "Ha Giang", "country": "VN", "start": "2026-09-24", "end": "2026-09-26", "nights": 2, "lat": 22.82, "lon": 104.98, "status": "current", "tentative": true, "via": "bus", "local": "Hà Giang · boucle en easy rider", "arrive": "Bus de nuit depuis Hanoï, tu embraies direct sur la boucle 3J/2N.", "leave": "Bus de nuit retour vers Hanoï (20h-23h → Hanoï 04h-07h), à réserver sur place en arrivant en ville.", "highlights": [{"title": "Boucle 3J/2N en easy rider", "detail": "Passager derrière un pilote local : Ma Pi Leng, Meo Vac, Dong Van."}, {"title": "Trung Thu pendant la boucle", "detail": "La fête de mi-automne tombe vendredi 25/09, en plein dans ton parcours."}, {"title": "Permis frontalier obligatoire", "detail": "260 000 VND, généralement inclus par l'opérateur, passeport original au checkpoint (15-30 min)."}, {"title": "Passager, pas pilote", "detail": "En passager d'un local, le risque est une fraction de celui d'un touriste qui conduit lui-même."}], "practical": ["Mama's Homestay : ~4 050 000 VND pour le 3J/2N passager (pilote, assurance moto, permis, repas, 2 nuits).", "Contact : WhatsApp +84 915 121 987, mamashomestay.com. Acompte non remboursable.", "Vérifie par écrit que ton assurance voyage couvre le passager de moto."], "watch": ["Beaucoup d'assurances excluent la moto : en passager c'est souvent couvert mais à vérifier par écrit.", "Zones à glissement de terrain (QL4C km 115-138), visibilité réduite sur Ma Pi Leng sous forte pluie."], "toBook": ["Bus de nuit retour vers Hanoï, à réserver sur place dès l'arrivée en ville.", "Confirmation écrite : assurance voyage couvre le passager moto."]}, {"id": "hanoi2", "order": 3, "name": "Hanoï, retour", "short": "Hanoï", "country": "VN", "start": "2026-09-27", "end": "2026-09-28", "nights": 1, "lat": 21.03, "lon": 105.85, "status": "next", "tentative": true, "via": "bus", "local": "Hanoï · retour après la boucle", "arrive": "Bus de nuit depuis Hà Giang (départ 20h-23h), arrivée à Hanoï vers 04h-07h.", "leave": "Navette pour la croisière Ha Long dès le lendemain matin, départ du vieux quartier.", "highlights": [{"title": "Lac de l'Ouest & pagode Trấn Quốc", "detail": "Avec le Temple de la Littérature, listés comme prioritaires pour ce 2e passage à Hanoï."}, {"title": "Marché Đồng Xuân + musée d'Ethnographie", "detail": "Pour ce 2e passage, si pas encore vus — activités du « jour 2 » listées dans le dossier."}, {"title": "Marionnettes sur l'eau", "detail": "Théâtre Thăng Long, 57B Đinh Tiên Hoàng, si pas déjà vues le 23/09 — réserve 2-3 jours avant en ligne."}, {"title": "Train Street", "detail": "Créneau fiable 19h-20h : entre en client d'un café du vieux quartier, pas de billet officiel."}], "practical": ["Le mausolée Hô Chi Minh est fermé jusqu'au 02/11 (entretien annuel) — pas la peine d'y passer.", "Zone piétonne autour du lac seulement du vendredi 19h à dimanche minuit."], "watch": ["Le trajet Hà Giang → Hanoï puis Hanoï → embarcadère Ha Long n'est pas chiffré dans le dossier écrit — vérifie sur place.", "Horaires taï-chi, Ngọc Sơn etc. documentés pour le 1er passage (23-24/09), pas vérifiés pour un retour tardif."], "toBook": ["Si marionnettes/Train Street pas faits le 23/09 : réserve en ligne (Traveloka/Headout) pour ce soir.", "Transport Hà Giang → Hanoï → embarcadère croisière (non documenté, à confirmer sur place)."]}, {"id": "halong", "order": 4, "name": "Baie d'Ha Long", "short": "Ha Long", "country": "VN", "start": "2026-09-28", "end": "2026-09-29", "nights": 1, "lat": 20.91, "lon": 107.18, "status": "later", "via": "cruise", "local": "Vịnh Hạ Long · croisière 1 nuit", "arrive": "Navette depuis le vieux quartier de Hanoï — date exacte selon ton retour de boucle.", "leave": "Débarquement 11h30, puis départ vers Ninh Bình — de nombreux départs chaque jour, zéro tension.", "highlights": [{"title": "1 nuit à bord", "detail": "Grotte, kayak, coucher de soleil, pêche au calamar, village flottant, brunch avant débarquement (programme type)."}, {"title": "Choisis la bonne baie", "detail": "Le plan dit « Ha Long », mais évite si possible le cœur (~500 bateaux) — Bái Tử Long ou Lan Hạ sont recommandées."}, {"title": "Retour de terrain : préfère Lan Hạ", "detail": "Mêmes paysages, beaucoup moins de bateaux ; sur Ha Long les sites sont pris d'assaut, la ville « rien à voir »."}], "practical": ["Prix jamais affiché pour une chambre solo — demande un devis écrit à 2-3 opérateurs.", "Opérateurs repérés : Cycad Indochine (161 USD), Paradise Grand (164 USD, Lan Hạ), Heritage (179-208 USD).", "Supplément solo : 15-50% en général, jusqu'à 70-85% chez Indochina Junk — parfois offert en sept-oct."], "watch": ["Comment rejoindre l'embarcadère en arrivant par bus de nuit depuis Hà Giang n'est documenté nulle part.", "Septembre = mois le plus annulé pour les croisières du Nord (~31% de risque météo, chiffre pour Cat Ba)."], "toBook": ["Devis écrit + réservation de la croisière (opérateur pas encore choisi).", "Transport jusqu'au point d'embarquement (non documenté)."]}, {"id": "ninhbinh", "order": 5, "name": "Ninh Bình", "short": "Ninh Bình", "country": "VN", "start": "2026-09-29", "end": "2026-09-30", "nights": 1, "lat": 20.22, "lon": 105.93, "status": "later", "via": "bus", "local": "Ninh Bình · Tam Cốc / Tràng An", "arrive": "Débarquement de la croisière Ha Long, en fin de matinée.", "leave": "Train de nuit SE3 vers Hué, 21h36 → 07h50, couchette molle.", "highlights": [{"title": "Tràng An en priorité", "detail": "Tôt le matin avant 08h, itinéraire 2 conseillé (2h-2h30, grotte Đại 150 m), 300 000 VND."}, {"title": "Hang Múa", "detail": "500 marches, panorama, 150 000 VND, viser 16h30-17h30 pour le coucher de soleil."}, {"title": "Tam Cốc à vélo", "detail": "Vélos gratuits depuis l'hébergement."}, {"title": "Cố đô Hoa Lư", "detail": "Temples des rois Đinh et Lê, 20 000 VND, 07h-18h."}, {"title": "Phố cổ Hoa Lư le soir", "detail": "Vieille ville reconstituée, entrée gratuite, ambiance lanternes max dès 19h."}], "practical": ["Hébergement repéré : Tam Coc Moment Homestay, vélos gratuits, bar sur le toit, ~25-27 USD/nuit.", "Budget billets jour (Tràng An + Hang Múa) : 450 000 VND."], "watch": ["Check-in officiel 14h00 seulement — écris à l'avance pour garder tes bagages avant le train de nuit.", "Depuis la fusion admin 2025, cherche « Nam Hoa Lư » plutôt que « Ninh Binh City » sur Maps."], "toBook": ["Billet train SE3 Ninh Bình → Hué, couchette molle (~58 EUR, à recouper — réservation dès 60j avant)."]}, {"id": "hue", "order": 6, "name": "Huế", "short": "Huế", "country": "VN", "start": "2026-10-01", "end": "2026-10-02", "nights": 1, "lat": 16.46, "lon": 107.59, "status": "later", "via": "train", "local": "Huế · cité impériale", "arrive": "Train SE3, arrivée 07h50.", "leave": "Vers Hội An par le col de Hải Vân ou train Heritage.", "highlights": [{"title": "Cité impériale", "detail": "200 000 VND seule, ou combo + Tự Đức + Khải Định 420 000 VND (valable 2 jours) — 06h30-17h30 l'été."}, {"title": "Concert ca Huế en bateau-dragon", "detail": "19h/20h/21h, ~1h, 80-150 000 VND — seule option fleuve pour un solo."}, {"title": "Pagode Thiên Mụ", "detail": "Gratuite, dons libres, meilleure lumière 07h-09h30 ou 16h-18h."}, {"title": "Marché Đông Ba", "detail": "Bún bò Huế, nem lụi, bánh bèo, bánh khoái, cơm hến — stands réputés après 15h, à l'extérieur."}, {"title": "Ordre suggéré", "detail": "08h30 Cité + musée → Đông Ba (déj) → Khải Định → Tự Đức → Thiên Mụ (16h-18h) → ca Huế 19h."}], "food": ["Marché Đông Ba (stands extérieurs, après 15h00)"], "practical": ["Billetterie UNESCO en espèces uniquement — prévois 900 000-1 300 000 VND en liquide pour la journée.", "Grab : centre → Tự Đức 150-200 000 VND ; boucle des tombeaux en Grab gardé, 400-600 000 VND."], "watch": ["Une seule nuit prévue contre 2 dans une note antérieure — journée chargée mais faisable.", "Octobre = 755 mm de pluie, marches de Khải Định et allées de Tự Đức glissantes.", "Retour terrain : citadelle « rasée aux 3/4 » par les bombardements, la maquette sauve la visite."]}, {"id": "hoian", "order": 7, "name": "Hội An", "short": "Hội An", "country": "VN", "start": "2026-10-02", "end": "2026-10-04", "nights": 2, "lat": 15.88, "lon": 108.33, "status": "later", "via": "car", "local": "Hội An · vieille ville", "arrive": "Depuis Huế par le col de Hải Vân (voiture privée) ou train Heritage.", "leave": "Vers Đà Nẵng.", "highlights": [{"title": "Vieille ville", "detail": "Billet 120 000 VND = 5 coupons dont Chùa Cầu ; scooters interdits 09h-11h et 15h-21h30."}, {"title": "Vélo gratuit", "detail": "La plupart des hôtels/homestays en prêtent."}, {"title": "An Bàng", "detail": "Plage à 3-4 km au nord, 15-20 min à vélo."}, {"title": "Mỹ Sơn", "detail": "150 000 VND, vise 06h30 à la porte pour éviter les bus de tours (évite 11h-14h) ; ~950 000 VND tout compris en solo."}, {"title": "Cẩm Thanh, forêt de cocotiers", "detail": "Réserve la veille via Klook : 80-100 000 VND tout compris (vs 280 000 VND seul) ; 07h-09h ou après 16h30."}], "food": ["An Bàng : Shore Club, The Deckhouse, Soul Kitchen", "Sea and Sand, Luna d'Autunno, Chao Nghêu Cô Gió"], "practical": ["Prévois ~1 M VND en petites coupures pour Mỹ Sơn + Cẩm Thanh + vélo."], "watch": ["An Bàng : houle dès fin sept., drapeaux rouges — pas de vraie baignade, suis les locaux.", "Cẩm Thanh très commercialisé (pourboire, upsell) — le plus sacrifiable en solo.", "Mỹ Sơn dispensable si la journée est chargée : 2h de route pour peu de vestiges (retour terrain)."], "toBook": ["Liaison Hué → Hội An à choisir : voiture privée (69-79 USD) ou train Heritage."]}, {"id": "danang", "order": 8, "name": "Đà Nẵng", "short": "Đà Nẵng", "country": "VN", "start": "2026-10-04", "end": "2026-10-05", "nights": 1, "lat": 16.05, "lon": 108.2, "status": "later", "via": "car", "local": "Đà Nẵng · dernière soirée VN", "arrive": "Depuis Hội An, 28-32 km, 35-50 min en Grab.", "leave": "Vol Cebu Pacific 5J5757, 22h30 → Manille 02h20+1 (déjà acheté).", "highlights": [{"title": "Marble Mountains", "detail": "Thủy Sơn + ascenseur + grotte Âm Phủ ≈ 75 000 VND ; viens à 07h00 ou après 15h30 pour éviter l'affluence."}, {"title": "Dragon Bridge", "detail": "Spectacle feu et eau ven/sam/dim 21h00, gratuit, 30 min — le 04/10 tombe un dimanche."}, {"title": "Lady Buddha / Sơn Trà", "detail": "Gratuit, à 15 min de Mỹ Khê."}, {"title": "Plage Mỹ Khê", "detail": "Plage principale de Đà Nẵng, à deux pas du centre."}, {"title": "Musée Chăm", "detail": "60 000 VND, en fin d'après-midi après Marble Mountains — billetterie ferme à 16h30."}], "practical": ["Vol déjà acheté : Cebu Pacific 5J5757, 163,53 EUR, 20 kg de soute, assurance Chubb incluse.", "Cabine limitée à 10 kg sur les vols 5J ; enregistre-toi en ligne 48h avant.", "Programme vol du soir : dors à Hội An/Mỹ Khê, late check-out, Marble Mountains + Sơn Trà + plage, Grab vers l'aéroport ~19h30."], "watch": ["Preuve de sortie du Vietnam probablement exigée par Etihad à l'embarquement CDG (pas confirmé spécifiquement pour Etihad, juste une pratique générale) — de toute façon déjà couverte par ton billet 5J5757."]}, {"id": "siargao", "order": 9, "name": "Siargao", "short": "Siargao", "country": "PH", "start": "2026-10-06", "end": "2026-10-13", "nights": 7, "lat": 9.79, "lon": 126.16, "status": "later", "via": "plane", "local": "General Luna · surf", "arrive": "Vol MNL→CEB→IAO 06h40-10h00 (billet unique). Van Sayak→General Luna 350-405 PHP (45-60 min).", "leave": "PAL Express IAO→CEB→USU, 13/10 08h25-12h20 (escale 1h45) — vol pas encore acheté.", "highlights": [{"title": "Cloud 9", "detail": "100 PHP/jour (7h-17h), gratuit au lever du soleil. Ponton en travaux avant le WSL du 31/10-10/11."}, {"title": "Magpupungko (Pilar)", "detail": "Piscines à marée basse only : arrive 1h30-2h avant, sinon accès fermé à marée haute. 50 PHP + parking 20-30."}, {"title": "Sugba Lagoon", "detail": "Bateaux depuis Del Carmen (pas GL), ~2150 PHP/bateau (6 pax max) + entrées. 3h max sur place."}, {"title": "Island hopping Daku/Guyam/Naked", "detail": "Joiner 500-1500 PHP + 100 PHP frais environnement."}, {"title": "Maasin River", "detail": "Plateforme de saut, 20 PHP, sauts illimités (la corde a été détruite par un typhon)."}, {"title": "Sohoton Cove (option)", "detail": "Journée depuis Dapa Port, 2300-3100 PHP/pers. Quasi pas de méduses mi-octobre (pic mars-juin). Exclut les autres sites ce jour-là."}], "practical": ["Taxe environnement 20 PHP à la sortie de l'aéroport Sayak.", "Cash only sur les sites, pas de DAB à Magpupungko.", "Pluie ~15 min plusieurs fois/jour en octobre, jamais gênante.", "Pas de rabais mi-saison : octobre est le pic de la saison surf."], "watch": ["Vol de sortie (13/10 vers Coron) pas acheté au 22/09 — à reconfirmer.", "Marées de Magpupungko dans le dossier calculées sur les mauvaises dates.", "Hébergement limité fin octobre (prépa Philippines Pro), prix en hausse."], "toBook": ["Vol PAL Express Siargao→Coron du 13/10 (~70€), pas encore acheté.", "Trancher Sohoton Cove vs Sugba/hopping pour un jour de la semaine."]}, {"id": "coron", "order": 10, "name": "Coron", "short": "Coron", "country": "PH", "start": "2026-10-13", "end": "2026-10-15", "nights": 2, "lat": 12.0, "lon": 120.2, "status": "later", "via": "plane", "local": "Coron town · lagons", "arrive": "Atterrissage Busuanga 12h20 le 13/10, van aéroport → Coron town 250 PHP (~30 min).", "leave": "Embarquement Keelooma, Coron Port, 08h00 le 15/10.", "highlights": [{"title": "Mount Tapyas au coucher du soleil", "detail": "Programme de l'après-midi d'arrivée, le 13/10."}, {"title": "Journée lagons (14/10)", "detail": "Kayangan 300 PHP, Twin Lagoon 200, Barracuda 200-250, Skeleton Wreck 150, Siete Pecados 100, + 200 municipal (une fois)."}, {"title": "Bateau privé vs partagé", "detail": "Privé CTBA ~4150-4950 PHP tout compris (départ 7h) ; partagé « Super Ultimate » 1690-1900 PHP (Klook), pickup ~8h."}, {"title": "Tactique anti-foule", "detail": "Départ privé 7h : Twin/Kayangan en premier, Barracuda 9h30-10h, Skeleton/Siete 13h-15h."}, {"title": "Sources chaudes Maquinit", "detail": "Au programme mais déconseillées par le retour de terrain de Robin : eau plus chaude que l'air."}], "practical": ["Taxe environnementale 200 PHP cash, une seule fois — garder le reçu.", "Prévoir des pesos avant Busuanga ; retrait possible à Cebu.", "Solde Keelooma en cash au bureau de Coron, au plus tard le 14/10.", "Peu d'hôtels, mauvais rapport qualité/prix, sans rabais — réserver vite."], "watch": ["Solde Keelooma en cash à régler le même jour que la journée lagons.", "CTBA ne répond pas au tél. : réserver via Facebook/hôtel, depuis Siargao.", "Sources chaudes prévues au programme mais déconseillées sur le terrain."], "toBook": ["Bateau privé CTBA (14/10) ou repli Klook Super Ultimate.", "Hébergement Coron, 2 nuits — non chiffré."]}, {"id": "keelooma", "order": 11, "name": "Expédition Coron → El Nido", "short": "Linapacan", "country": "PH", "start": "2026-10-15", "end": "2026-10-17", "nights": 2, "lat": 11.49, "lon": 119.85, "status": "later", "via": "boat", "local": "Bateau Coron → El Nido", "arrive": "Départ Coron Port 08h00 le 15/10 (tricycle <100 PHP depuis la ville).", "leave": "Arrivée El Nido, TownSquare, vers 17h00 le 17/10.", "highlights": [{"title": "Format 3D2N « Voyage & Island Stay »", "detail": "Via Linapacan et Culion ; kubo 2 pers., literie, buffets/snacks inclus, kayak, masque-tuba (pas de palmes)."}, {"title": "Itinéraire non fixé", "detail": "Adapté à la météo au jour le jour, selon keelooma.com."}, {"title": "Trajet indicatif", "detail": "J1 Culion/Coron, J2 Linapacan, J3 Linapacan sud puis arrivée El Nido est."}, {"title": "Confort", "detail": "Pas de wifi, électricité coupée la nuit, douches basiques mais propres."}, {"title": "Prix", "detail": "19 000 PHP/pers., 17 000 avec code OFFPEAK2026 (départs jusqu'au 31/10). Acompte 50%, solde cash à Coron."}], "practical": ["ETDF Linapacan (200 PHP) et Culion (100 PHP) en cash sur place.", "22 places sur 104 disponibles au 15/10 (vérifié le 20/09).", "Assurance voyage obligatoire, preuve exigée avant l'embarquement.", "Réservation par formulaire du site ou WhatsApp, pas de paiement en ligne."], "watch": ["CGV vs FAQ se contredisent sur le remboursement météo — à clarifier par écrit avant l'acompte.", "Une interruption en mer n'ouvre droit à rien, contrairement à une annulation avant départ.", "Compter un jour et demi pour récupérer après (retour Robin, sens inverse, 2025).", "Capacité du bateau contradictoire selon les sources (12 à 24 places)."], "toBook": ["Réservation Keelooma (acompte 50%) — à réserver avant tout autre billet philippin, verrouille toutes les dates PH.", "Solde en espèces à préparer pour le bureau de Coron."]}, {"id": "elnido", "order": 12, "name": "El Nido", "short": "El Nido", "country": "PH", "start": "2026-10-17", "end": "2026-10-19", "nights": 2, "lat": 11.18, "lon": 119.4, "status": "later", "via": "boat", "local": "El Nido · lagons", "arrive": "Dépose par le bateau Keelooma, TownSquare El Nido, vers 17h00 le 17/10.", "leave": "Cebgo DG6255 depuis Lio, 19/10 16h40-18h25 vers Cebu — pas encore acheté.", "highlights": [{"title": "Tour A ou C (lagons)", "detail": "Joiner 1200-1500 PHP + 200 PHP/lagon, kayak 150 PHP pour le Big Lagoon."}, {"title": "Fiabilité des tours", "detail": "Tour C (houle) souvent annulé par les garde-côtes ; Tour A/D plus fiables. Annulation 18-35% selon le mois."}, {"title": "Nacpan Beach", "detail": "45 min au nord ; Duli si la route est sèche ; Las Cabañas au coucher du soleil."}, {"title": "ETDF El Nido", "detail": "400 PHP, valable 10 jours, en cash."}], "practical": ["Scooter 400-700 PHP/jour + caution 2000-5000 PHP cash (jamais le passeport). Sinon tricycle Nacpan ~600-800 PHP A/R.", "Tours réservables le jour même ou la veille en basse saison."], "watch": ["Après la fatigue du bateau, une seule journée pleine (18/10) : serré.", "Vol de sortie pas acheté au 22/09 — c'est aussi la preuve de sortie PH.", "Tour C le plus souvent annulé le matin même par les garde-côtes."], "toBook": ["Vol Cebgo El Nido (Lio)→Cebu du 19/10 (~112€), pas encore acheté.", "Hébergement El Nido, 2 nuits — non chiffré.", "Tour lagons A ou C."]}, {"id": "cebu", "order": 13, "name": "Cebu, transit de nuit", "short": "Cebu", "country": "PH", "start": "2026-10-19", "end": "2026-10-20", "nights": 1, "lat": 10.31, "lon": 123.98, "status": "later", "via": "plane", "local": "Mactan-Cebu · transit", "arrive": "Cebgo DG6255 depuis Lio (El Nido), 19/10 16h40-18h25 (pas encore acheté).", "leave": "Cebu Pacific 5J5062, CEB T2→NRT T2, 20/10 01h45-07h55 (acheté, réf. —).", "highlights": [{"title": "Escale de 7h20 sur place", "detail": "T1 domestique et T2 international reliés par passerelle (3-10 min) + navette gratuite 24h/24."}, {"title": "Nuit blanche à l'aéroport", "detail": "Aucun hôtel prévu : correspondance directe entre les deux vols, sans hébergement."}, {"title": "Vol Cebu→Narita", "detail": "Le plus fragile de la chaîne selon le plan (pas quotidien), mais déjà acheté (réf. —)."}], "practical": ["Franchise cabine 7 kg strictement appliquée sur Cebgo."], "watch": ["Vol Cebu→Narita non quotidien, basé sur un sondage Google Flights, pas un horaire publié.", "Vol d'arrivée El Nido→Cebu (19/10) pas encore acheté au 22/09."], "toBook": ["Vol Cebgo El Nido→Cebu du 19/10 — pas acheté au 22/09."]}, {"id": "tokyo", "order": 14, "name": "Tokyo", "short": "Tokyo", "country": "JP", "start": "2026-10-20", "end": "2026-10-27", "nights": 7, "lat": 35.71, "lon": 139.77, "status": "later", "via": "plane", "local": "Tokyo · 7 nuits", "arrive": "Atterrissage NRT 07h55 (5J5062) ; Skyliner ~08h15-08h30 vers Ueno/Nippori.", "leave": "Skyliner puis Emirates EK321 NRT 21h30→DXB, corresp. EK073 vers Paris (arr. 12h25).", "highlights": [{"title": "Mer 21/10 — Harajuku/Shibuya", "detail": "Meiji-jingū tôt, friperies (Kinji, Brain Dead), Shibuya (Hachikō, Pokémon Center, Nintendo), dîner Uobei."}, {"title": "Jeu 22/10 — Mitaka/Kichijōji", "detail": "Musée Ghibli (1000¥, fermé mardi, créneau à réserver), puis Kichijōji."}, {"title": "Ven 23/10 — Shimokitazawa/Nakameguro/Ebisu", "detail": "Friperies le matin, Starbucks Reserve Roastery, Betty Smith Ebisu (jeans, ~140€) si créneau OK."}, {"title": "Sam 24/10 — Akihabara/Ueno-Yanaka", "detail": "Super Potato, amiami, Radio Kaikan le matin ; Ameyoko et Yanaka Ginza le soir."}, {"title": "Dim 25/10 — Asakusa/Kappabashi/Skytree", "detail": "Sensō-ji avant la foule, Kura Sushi, Kappabashi (couteaux), Skytree en fin de journée."}, {"title": "Lun 26/10 — teamLab Planets", "detail": "Toyosu, billets dès 3600¥. Jour tampon pour achats lourds et pesée du bagage."}], "food": ["Uobei (Shibuya)", "Sushi no Midori (Shibuya)"], "practical": ["Base pressentie Ueno, terminus Skyliner (36-41 min, ~2470¥).", "Suica/Pasmo au paiement à l'unité ; Visa FR parfois refusée au rechargement (prévoir Mastercard/Amex ou espèces en konbini).", "Détaxe ancien système (passeport physique) valable jusqu'au 31/10.", "Pas d'excursion à la journée (Kamakura, Nikkō...) : écartées volontairement."], "watch": ["Billet Ghibli : achat via Lawson exige un mobile japonais. Repli : tour JTB Sunrise.", "Tokyo Film Festival du 26/10 au 04/11, pile dans le Ginza du dernier jour.", "27/10 : départ de Ginza au plus tard 16h00, sans deuxième chance.", "Hébergement Tokyo jamais chiffré dans aucun dossier."], "toBook": ["Créneau musée Ghibli du 22/10 — priorité absolue.", "teamLab Planets pour le 26/10.", "Betty Smith Ebisu Factory (Jeans Making Experience).", "Hébergement Tokyo, 7 nuits — non chiffré.", "Visit Japan Web, avant le 20/10."]}], "bookings": [{"id": "assurance-axa-voyageo", "order": 1, "label": "Assurance AXA Voyageo", "kind": "assurance", "dateIso": "2026-09-22", "status": "inconnu", "stop": "hanoi1", "price": "264-294 €", "where": "axa.fr", "note": "Aucune trace d'achat dans le dossier ni la boîte mail ; couverture conditionnée à une confirmation écrite d'AXA sur le scooter sans permis, jamais obtenue", "_id": "assurance-axa-voyageo"}, {"id": "etihad-cdg-han", "order": 2, "label": "Vol Etihad Paris → Hanoï", "kind": "vol", "dateIso": "2026-09-22", "status": "achete", "stop": "hanoi1", "time": "10h40", "note": "Vol déjà effectué", "_id": "etihad-cdg-han"}, {"id": "bus-hanoi-hagiang", "order": 3, "label": "Bus nuit Hanoï → Ha Giang", "kind": "bus", "dateIso": "2026-09-23", "status": "achete", "stop": "hagiang", "price": "18-24 €", "time": "", "note": "Pris le 23/09 au soir", "_id": "bus-hanoi-hagiang"}, {"id": "boucle-ha-giang", "order": 4, "label": "Boucle Ha Giang 3J/2N", "kind": "activite", "dateIso": "2026-09-24", "status": "achete", "stop": "hagiang", "price": "≈153 €", "where": "Mama's Homestay", "note": "En cours depuis le 24/09 (date à confirmer), Mama's Homestay", "_id": "boucle-ha-giang"}, {"id": "retour-hagiang-hanoi", "order": 5, "label": "Retour Ha Giang → Hanoï", "kind": "bus", "dateIso": "2026-09-26", "status": "sur_place", "stop": "hanoi2", "time": "20h00-23h00 → 04h00-07h00", "where": "Sur place à Ha Giang", "note": "Date hypothèse, à confirmer", "_id": "retour-hagiang-hanoi"}, {"id": "croisiere-halong", "order": 6, "label": "Croisière baie d'Ha Long", "kind": "croisiere", "dateIso": "2026-09-28", "status": "a_acheter", "stop": "halong", "time": "12h00", "where": "Opérateur à choisir", "note": "Date à confirmer selon le retour ; devis écrit requis, supplément solo jamais affiché en ligne", "_id": "croisiere-halong"}, {"id": "train-se3", "order": 7, "label": "Train SE3 Ninh Bình → Huế", "kind": "train", "dateIso": "2026-09-30", "status": "a_acheter", "stop": "ninhbinh", "price": "≈58 €", "time": "21h36 → 07h50", "where": "dsvn.vn", "note": "Couchette molle, réserve tôt", "_id": "train-se3"}, {"id": "etravel-philippines", "order": 8, "label": "eTravel Philippines", "kind": "formalite", "dateIso": "2026-10-03", "status": "a_acheter", "stop": "danang", "where": "etravel.gov.ph", "note": "Fenêtre 72h avant l'arrivée du 06/10", "_id": "etravel-philippines"}, {"id": "cp-danang-manille", "order": 9, "label": "Vol Đà Nẵng → Manille", "kind": "vol", "dateIso": "2026-10-05", "status": "achete", "stop": "danang", "price": "163,53 €", "time": "22h30", "note": "Assurance Chubb incluse (4,64 USD)", "_id": "cp-danang-manille"}, {"id": "cp-manille-siargao", "order": 10, "label": "Vol Manille → Siargao", "kind": "vol", "dateIso": "2026-10-06", "status": "achete", "stop": "siargao", "price": "9864 PHP", "time": "06h40", "note": "Via Cebu, assurance Chubb incluse (643 PHP)", "_id": "cp-manille-siargao"}, {"id": "pal-siargao-coron", "order": 11, "label": "Vol Siargao → Coron", "kind": "vol", "dateIso": "2026-10-13", "status": "a_acheter", "stop": "siargao", "price": "70 €", "time": "08h25", "where": "philippineairlines.com", "note": "Escale Cebu 1h45", "_id": "pal-siargao-coron"}, {"id": "keelooma-coron-elnido", "order": 12, "label": "Bateau Keelooma Coron → El Nido", "kind": "bateau", "dateIso": "2026-10-15", "status": "a_acheter", "stop": "coron", "price": "236 €", "time": "08h00", "where": "keelooma.com", "note": "3J/2N, acompte 50%, solde à Coron au plus tard le 14/10", "_id": "keelooma-coron-elnido"}, {"id": "visit-japan-web", "order": 13, "label": "Visit Japan Web", "kind": "formalite", "dateIso": "2026-10-17", "status": "a_acheter", "stop": "tokyo", "where": "vjw-lp.digital.go.jp", "note": "Avant le 20/10, ≥6h avant l'atterrissage", "_id": "visit-japan-web"}, {"id": "cebgo-elnido-cebu", "order": 14, "label": "Vol El Nido → Cebu", "kind": "vol", "dateIso": "2026-10-19", "status": "a_acheter", "stop": "elnido", "price": "112-113 €", "time": "16h40", "where": "cebupacificair.com", "note": "Sert de preuve de sortie Philippines ; à acheter dès confirmation Keelooma, échéance avant le 05/10 (non atteinte au 24/09)", "_id": "cebgo-elnido-cebu"}, {"id": "cp-cebu-narita", "order": 15, "label": "Vol Cebu → Narita", "kind": "vol", "dateIso": "2026-10-20", "status": "achete", "stop": "cebu", "price": "14501 PHP", "time": "01h45", "note": "Vol non quotidien, assurance Chubb incluse (1255 PHP)", "_id": "cp-cebu-narita"}, {"id": "hebergement-tokyo", "order": 16, "label": "Hébergement Tokyo, Ueno, 7 nuits", "kind": "hebergement", "dateIso": "2026-10-20", "status": "a_acheter", "stop": "tokyo", "note": "Privilégie la ligne Yamanote ; évite Ginza les 26-27/10 (Tokyo International Film Festival)", "_id": "hebergement-tokyo"}, {"id": "emirates-nrt-cdg", "order": 17, "label": "Vol Emirates Narita → Paris", "kind": "vol", "dateIso": "2026-10-27", "status": "achete", "stop": "tokyo", "time": "21h30", "note": "Economy Flex, soute 30 kg, enregistrement 18h30, via Dubaï", "_id": "emirates-nrt-cdg"}], "updatedLabel": "jeu. 24 sept."};
+  const CLAUDE_URL = "https://claude.ai/artifact/FoBEr7XPL3qjGPkp4MRfiB";
+  const FALLBACK = STATIC ? STATIC.stops : [{"id": "hanoi1", "order": 1, "name": "Hanoï", "short": "Hanoï", "country": "VN", "start": "2026-09-23", "end": "2026-09-23", "nights": 0, "lat": 21.03, "lon": 105.85, "status": "done"}, {"id": "hagiang", "order": 2, "name": "Boucle de Ha Giang", "short": "Ha Giang", "country": "VN", "start": "2026-09-24", "end": "2026-09-26", "nights": 2, "lat": 22.82, "lon": 104.98, "status": "current", "tentative": true}, {"id": "hanoi2", "order": 3, "name": "Hanoï, retour", "short": "Hanoï", "country": "VN", "start": "2026-09-27", "end": "2026-09-28", "nights": 1, "lat": 21.03, "lon": 105.85, "status": "next", "tentative": true}, {"id": "halong", "order": 4, "name": "Baie d'Ha Long", "short": "Ha Long", "country": "VN", "start": "2026-09-28", "end": "2026-09-29", "nights": 1, "lat": 20.91, "lon": 107.18, "status": "later"}, {"id": "ninhbinh", "order": 5, "name": "Ninh Bình", "short": "Ninh Bình", "country": "VN", "start": "2026-09-29", "end": "2026-09-30", "nights": 1, "lat": 20.22, "lon": 105.93, "status": "later"}, {"id": "hue", "order": 6, "name": "Huế", "short": "Huế", "country": "VN", "start": "2026-10-01", "end": "2026-10-02", "nights": 1, "lat": 16.46, "lon": 107.59, "status": "later"}, {"id": "hoian", "order": 7, "name": "Hội An", "short": "Hội An", "country": "VN", "start": "2026-10-02", "end": "2026-10-04", "nights": 2, "lat": 15.88, "lon": 108.33, "status": "later"}, {"id": "danang", "order": 8, "name": "Đà Nẵng", "short": "Đà Nẵng", "country": "VN", "start": "2026-10-04", "end": "2026-10-05", "nights": 1, "lat": 16.05, "lon": 108.2, "status": "later"}, {"id": "siargao", "order": 9, "name": "Siargao", "short": "Siargao", "country": "PH", "start": "2026-10-06", "end": "2026-10-13", "nights": 7, "lat": 9.79, "lon": 126.16, "status": "later"}, {"id": "coron", "order": 10, "name": "Coron", "short": "Coron", "country": "PH", "start": "2026-10-13", "end": "2026-10-15", "nights": 2, "lat": 12.0, "lon": 120.2, "status": "later"}, {"id": "keelooma", "order": 11, "name": "Expédition Coron → El Nido", "short": "Linapacan", "country": "PH", "start": "2026-10-15", "end": "2026-10-17", "nights": 2, "lat": 11.49, "lon": 119.85, "status": "later"}, {"id": "elnido", "order": 12, "name": "El Nido", "short": "El Nido", "country": "PH", "start": "2026-10-17", "end": "2026-10-19", "nights": 2, "lat": 11.18, "lon": 119.4, "status": "later"}, {"id": "cebu", "order": 13, "name": "Cebu, transit de nuit", "short": "Cebu", "country": "PH", "start": "2026-10-19", "end": "2026-10-20", "nights": 1, "lat": 10.31, "lon": 123.98, "status": "later"}, {"id": "tokyo", "order": 14, "name": "Tokyo", "short": "Tokyo", "country": "JP", "start": "2026-10-20", "end": "2026-10-27", "nights": 7, "lat": 35.71, "lon": 139.77, "status": "later"}];
+  const INSPIRATIONS = [{"name": "Freika/dawarich", "url": "https://github.com/Freika/dawarich", "idea": "compteurs jours, km et pays calculés sur le trajet"}, {"name": "seanmorley15/AdventureLog", "url": "https://github.com/seanmorley15/AdventureLog", "idea": "progression et badges d'étapes, ici en tampons de passeport"}, {"name": "Snake76500/Carnet_Voyage", "url": "https://github.com/Snake76500/Carnet_Voyage", "idea": "frise et carte reliées, tracé du chemin parcouru"}, {"name": "YiweiCreates/journey-atlas", "url": "https://github.com/YiweiCreates/journey-atlas", "idea": "une seule source de données, étapes marquées « à confirmer », recherche dans le registre"}, {"name": "skywain/trip-planner-skill", "url": "https://github.com/skywain/trip-planner-skill", "idea": "propositions de replanification ciblées sur une étape"}, {"name": "liketrek/TREK", "url": "https://github.com/liketrek/TREK", "idea": "journal daté avec photos et barre d'onglets mobile"}];
+
+  const ICON = {
+    bus: '<path d="M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11"/><path d="M5 11h14M5 17h14"/><circle cx="8" cy="19" r="1.5"/><circle cx="16" cy="19" r="1.5"/>',
+    moto: '<circle cx="5.5" cy="16.5" r="3"/><circle cx="18.5" cy="16.5" r="3"/><path d="M8.5 16.5h5l3-6h-4M14 6h3l1.5 4.5"/>',
+    train: '<rect x="6" y="3" width="12" height="13" rx="3"/><path d="M6 10h12M9 20l-2 2M15 20l2 2M9 16v4M15 16v4"/>',
+    boat: '<path d="M3 17l2 3h14l2-3H3zM6 17V9h12v8M12 9V4l5 3"/>',
+    plane: '<path d="M10.5 3.5l1.5-1 1.5 1V9l7 4v2l-7-2v4l2 1.5V20l-3.5-1-3.5 1v-1.5l2-1.5v-4l-7 2v-2l7-4z"/>',
+    car: '<path d="M4 16v-4l2-5h12l2 5v4M4 16h16M4 16v2M20 16v2"/><circle cx="8" cy="13.5" r="1"/><circle cx="16" cy="13.5" r="1"/>',
+    cruise: '<path d="M2 16c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0M5 13V8h14v5M9 8V5h6v3"/>',
+    ticket: '<path d="M3 9a2 2 0 0 0 0 4v5h18v-5a2 2 0 0 1 0-4V4H3z"/>',
+    shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+    doc: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+    bed: '<path d="M3 18V7M21 18v-5a3 3 0 0 0-3-3H10v5M3 14h18"/>',
+    walk: '<circle cx="13" cy="4" r="2"/><path d="M11 21l2-6-3-3 1-5 4 3 3 1M8 13l-2 2"/>',
+    spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
+    next: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    alert: '<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/>',
+    chev: '<path d="M9 6l6 6-6 6"/>',
+  };
+  const icon = (k, cls = "i") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ICON.walk}</svg>`;
+  const KIND_ICON = { vol: "plane", bus: "bus", train: "train", bateau: "boat", croisiere: "cruise", activite: "moto", assurance: "shield", formalite: "doc", hebergement: "bed" };
+
+  /* ================= état ================= */
+  const S = {
+    stops: FALLBACK.map((s) => ({ ...s })),
+    bookings: STATIC ? STATIC.bookings : [], ideas: [], journal: [], meta: STATIC ? { updatedLabel: STATIC.updatedLabel } : {},
+    live: false, dbState: STATIC ? "static" : "loading", canWrite: !STATIC,
+    tab: "ici", open: new Set(), editing: null, confirmNext: false,
+    find: "", selected: null, region: "vn",
+  };
+  let db = null, sample = null, assets = null;
+
+  /* ================= utilitaires ================= */
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const parseDay = (iso) => { if (!iso) return null; const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); };
+  const todayDate = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+  const isoOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const dayDiff = (a, b) => Math.round((b - a) / 86400000);
+  const MONTHS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+  const DOW = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."];
+  const ddmm = (iso) => { const d = parseDay(iso); return d ? `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}` : ""; };
+  const longDay = (iso) => { const d = parseDay(iso); return d ? `${DOW[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}` : ""; };
+  const range = (s) => (!s.start ? (s.datesLabel || "") : (!s.end || s.end === s.start ? longDay(s.start) : `${ddmm(s.start)} → ${ddmm(s.end)}`));
+  const nightsOf = (s) => (typeof s.nights === "number" ? s.nights : (s.start && s.end ? Math.max(0, dayDiff(parseDay(s.start), parseDay(s.end))) : 0));
+  const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
+  const sortedStops = () => [...S.stops].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const currentStop = () => sortedStops().find((s) => s.status === "current") || null;
+  const stopById = (id) => S.stops.find((s) => s.id === id);
+  const norm = (v) => String(v ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase();
+  const matches = (s, q) => {
+    if (!q) return true;
+    const hay = norm([s.name, s.short, s.local, s.arrive, s.leave, ...(s.highlights || []).map((h) => h.title + " " + (h.detail || "")), ...(s.food || []), ...(s.practical || [])].join(" "));
+    return norm(q).split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+  };
+  const hav = (a, b) => {
+    const R = 6371, r = Math.PI / 180;
+    const dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  };
+  const ls = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* stockage indisponible */ } },
+  };
+  const regionOf = (s) => {
+    for (const r of ["vn", "ph", "jp"]) {
+      const b = REGIONS[r].bounds;
+      if (s.lon >= b.west && s.lon <= b.east && s.lat >= b.south && s.lat <= b.north) return r;
+    }
+    return "all";
+  };
+  const kmSoFar = () => {
+    let km = 0, prev = PARIS;
+    sortedStops().filter((s) => s.status === "done" || s.status === "current").forEach((s) => {
+      if (typeof s.lat === "number") { km += hav(prev, s); prev = s; }
+    });
+    return Math.round(km);
+  };
+
+  // Sans base : la position se déduit des dates du plan
+  function statusByDate(list) {
+    const t = isoOf(todayDate());
+    const st = [...list].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    let ci = st.findIndex((s) => s.start && s.start <= t && s.end && s.end > t);
+    if (ci < 0 && t >= TRIP_START && t <= TRIP_END) st.forEach((s, i) => { if (s.start && s.start <= t) ci = i; });
+    return st.map((s, i) => ({ ...s, status: ci < 0 ? (t > TRIP_END ? "done" : "later") : i < ci ? "done" : i === ci ? "current" : i === ci + 1 ? "next" : "later" }));
+  }
+  const improveBtn = (id, small) => (STATIC
+    ? `<a class="btn ${small ? "small " : ""}primary" href="${CLAUDE_URL}" target="_blank" rel="noopener">${icon("spark")}Améliorer dans Claude</a>`
+    : `<button class="btn ${small ? "small " : ""}primary" type="button" data-act="improve" data-stop="${esc(id)}">${icon("spark")}Améliorer</button>`);
+
+  let raf = 0;
+  const render = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(renderAll); };
+
+  /* ================= HUD ================= */
+  function renderHud() {
+    const t = todayDate(), start = parseDay(TRIP_START), end = parseDay(TRIP_END);
+    const total = dayDiff(start, end) + 1, n = dayDiff(start, t) + 1;
+    if (n < 1) { $("dayBig").textContent = `J−${1 - n}`; $("dayOf").textContent = "départ"; }
+    else if (n > total) { $("dayBig").textContent = "Rentré"; $("dayOf").textContent = ""; }
+    else { $("dayBig").textContent = `Jour ${n}`; $("dayOf").textContent = `/ ${total}`; }
+    $("xp").innerHTML = BANDS.map((b) => {
+      const f = parseDay(b.from), days = dayDiff(f, parseDay(b.to)) + 1;
+      let h = "";
+      for (let i = 0; i < days; i++) {
+        const d = new Date(f); d.setDate(f.getDate() + i);
+        h += `<span class="t ${d < t ? "p" : +d === +t ? "n" : ""}"></span>`;
+      }
+      return `<span class="seg" title="${COUNTRY[b.c]}">${h}</span>`;
+    }).join("");
+    const cur = currentStop();
+    $("daySub").textContent = `${cur ? cur.short || cur.name : "—"} · ${kmSoFar().toLocaleString("fr-FR")} km`;
+  }
+
+  /* ================= panneau coulissant ================= */
+  const sheet = $("sheet");
+  const isDesk = () => window.matchMedia("(min-width: 900px)").matches;
+  const SNAPS = () => {
+    const H = window.innerHeight;
+    const full = sheet.getBoundingClientRect().height || H * 0.9;
+    return { peek: Math.min(Math.max(270, H * 0.36), 360), mid: Math.round(H * 0.6), full };
+  };
+  let snap = ls.get("carnet-snap") || "peek";
+  function setSnap(name, animate = true) {
+    const s = SNAPS();
+    snap = name in s ? name : "peek";
+    if (!animate) sheet.classList.add("dragging");
+    sheet.style.setProperty("--vis", s[snap] + "px");
+    if (!animate) requestAnimationFrame(() => sheet.classList.remove("dragging"));
+    ls.set("carnet-snap", snap);
+    MAP.layout();
+  }
+  function visibleSheet() {
+    if (isDesk()) return 0;
+    const v = parseFloat(getComputedStyle(sheet).getPropertyValue("--vis")) || 300;
+    return v;
+  }
+  (() => {
+    const grab = $("grab");
+    let y0 = 0, v0 = 0, moved = false, pid = null, t0 = 0;
+    grab.addEventListener("pointerdown", (e) => {
+      if (isDesk()) return;
+      pid = e.pointerId; y0 = e.clientY; v0 = visibleSheet(); moved = false; t0 = performance.now();
+    });
+    window.addEventListener("pointermove", (e) => {
+      if (pid !== e.pointerId) return;
+      const dy = e.clientY - y0;
+      if (!moved && Math.abs(dy) < 6) return;
+      if (!moved) { moved = true; sheet.classList.add("dragging"); try { grab.setPointerCapture(pid); } catch { /* rien */ } }
+      const s = SNAPS();
+      const v = Math.max(s.peek - 60, Math.min(s.full, v0 - dy));
+      sheet.style.setProperty("--vis", v + "px");
+    });
+    const end = (e) => {
+      if (pid !== e.pointerId) return;
+      pid = null;
+      if (!moved) return;
+      sheet.classList.remove("dragging");
+      const s = SNAPS(), v = visibleSheet();
+      const vel = (v0 - v) / Math.max(1, performance.now() - t0);
+      let best = "peek", bd = Infinity;
+      for (const [k, h] of Object.entries(s)) { const d = Math.abs(h - v); if (d < bd) { bd = d; best = k; } }
+      if (vel > 0.6) best = v > s.mid ? "full" : "mid";
+      if (vel < -0.6) best = v < s.mid ? "peek" : "mid";
+      setSnap(best);
+      grab.dataset.justDragged = "1";
+      setTimeout(() => { delete grab.dataset.justDragged; }, 50);
+    };
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+    grab.querySelector(".handle").addEventListener("click", () => setSnap(snap === "peek" ? "mid" : snap === "mid" ? "full" : "peek"));
+  })();
+
+  /* ================= carte 3D ================= */
+  const MAP = (() => {
+    const canvas = $("gl"), labels = $("labels");
+    let ok = false, renderer, scene, camera, controls, hemi, sun;
+    let cur = null;                      // région chargée
+    const cache = {};                    // région -> {group, heights, meta}
+    let markers = [];                    // {el, pos: Vector3, id, prio}
+    let beacon = null, comet = null, flight = null, lastInteract = 0, frame = 0;
+    const tmp = typeof THREE !== "undefined" ? new THREE.Vector3() : null;
+
+    const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+    function frameOf(r) {
+      const b = REGIONS[r].bounds;
+      const x0 = b.west, x1 = b.east, y0 = mercY(b.north), y1 = mercY(b.south);
+      const W = 100;
+      const H = W * ((y0 - y1) * 180 / Math.PI) / (x1 - x0);
+      return { W, H, uv: (lat, lon) => [(lon - x0) / (x1 - x0), (y0 - mercY(lat)) / (y0 - y1)] };
+    }
+
+    function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+    function isDark() { const c = cssVar("--sky-top"); return c.toLowerCase() === "#070c16"; }
+
+    function init() {
+      if (typeof THREE === "undefined" || !THREE.MapControls) return false;
+      try {
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+      } catch { return false; }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.setClearColor(0x000000, 0);
+      scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(new THREE.Color(cssVar("--fog")), 60, 260);
+      camera = new THREE.PerspectiveCamera(38, 1, 0.3, 1200);
+      hemi = new THREE.HemisphereLight(0xffffff, 0x9aa0a8, 0.95);
+      sun = new THREE.DirectionalLight(0xffffff, 0.42);
+      sun.position.set(-60, 90, -40);
+      scene.add(hemi, sun);
+      controls = new THREE.MapControls(camera, canvas);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.09;
+      controls.screenSpacePanning = false;
+      controls.maxPolarAngle = 1.18;
+      controls.minPolarAngle = 0.12;
+      controls.rotateSpeed = 0.6;
+      controls.zoomSpeed = 0.9;
+      controls.addEventListener("start", () => { lastInteract = performance.now(); flight = null; });
+      controls.addEventListener("change", () => { lastInteract = performance.now(); clampTarget(); });
+      ok = true;
+      window.addEventListener("resize", layout);
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      (mq.addEventListener ? mq.addEventListener("change", theme) : mq.addListener(theme));
+      new MutationObserver(theme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+      layout();
+      requestAnimationFrame(loop);
+      return true;
+    }
+
+    function theme() {
+      if (!ok) return;
+      scene.fog.color.set(cssVar("--fog"));
+      const dark = isDark();
+      hemi.intensity = dark ? 0.7 : 0.95;
+      sun.intensity = dark ? 0.35 : 0.42;
+      Object.values(cache).forEach((c) => { if (c.terrainMat) c.terrainMat.color.setScalar(dark ? 0.8 : 1); });
+    }
+
+    function layout() {
+      if (!ok) { flatLayout(); return; }
+      const W = window.innerWidth, H = window.innerHeight;
+      renderer.setSize(W, H, false);
+      camera.aspect = W / H;
+      // Décale le centre optique vers la partie visible de la carte
+      let ox = 0, oy = 0;
+      if (isDesk()) ox = -(420 + 16) / 2;
+      else {
+        const top = (window.visualViewport ? 0 : 0) + 70;
+        const vis = visibleSheet();
+        const center = (top + (H - vis)) / 2;
+        oy = H / 2 - center;
+      }
+      camera.setViewOffset(W, H, ox, oy, W, H);
+      camera.updateProjectionMatrix();
+    }
+
+    function clampTarget() {
+      if (!cur) return;
+      const f = cache[cur].frame, t = controls.target;
+      const cx = Math.max(-f.W / 2, Math.min(f.W / 2, t.x)), cz = Math.max(-f.H / 2, Math.min(f.H / 2, t.z));
+      const dx = cx - t.x, dz = cz - t.z;
+      if (dx || dz) { t.x += dx; t.z += dz; camera.position.x += dx; camera.position.z += dz; }
+      const d = camera.position.distanceTo(t);
+      scene.fog.near = d * 0.9;
+      scene.fog.far = d * 3.4;
+    }
+
+    function loadImage(src) {
+      return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+    }
+
+    const pending = {};
+    function build(r) {
+      if (cache[r]) return Promise.resolve(cache[r]);
+      if (!pending[r]) pending[r] = buildNow(r).finally(() => { delete pending[r]; });
+      return pending[r];
+    }
+    async function buildNow(r) {
+      const meta = REGIONS[r], look = LOOK[r], fr = frameOf(r);
+      const [tex, him] = await Promise.all([
+        new Promise((res, rej) => new THREE.TextureLoader().load(`relief/${r}-color.webp`, res, undefined, rej)),
+        loadImage(`relief/${r}-h.png`),
+      ]);
+      tex.encoding = THREE.sRGBEncoding;
+      tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+      const [mw, mh] = meta.mesh;
+      const c = document.createElement("canvas"); c.width = mw; c.height = mh;
+      const cx = c.getContext("2d", { willReadFrequently: true }); cx.drawImage(him, 0, 0, mw, mh);
+      const px = cx.getImageData(0, 0, mw, mh).data;
+      const ys = look.peak / 255;
+      const hts = new Float32Array(mw * mh);
+      for (let i = 0; i < mw * mh; i++) hts[i] = px[i * 4] * ys;
+
+      const group = new THREE.Group();
+      const geo = new THREE.PlaneGeometry(fr.W, fr.H, mw - 1, mh - 1);
+      geo.rotateX(-Math.PI / 2);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) pos.setY(i, hts[i]);
+      geo.computeVertexNormals();
+      const terrainMat = new THREE.MeshLambertMaterial({ map: tex });
+      if (isDark()) terrainMat.color.setScalar(0.8);
+      group.add(new THREE.Mesh(geo, terrainMat));
+
+      // Tranche de diorama : bords qui descendent jusqu'au socle
+      const base = -2.4 * look.unit;
+      const sideV = [], sideC = [], sideI = [];
+      const land = new THREE.Color(0x8c7a60), sea = new THREE.Color(0x5a93b4), bottom = new THREE.Color(0x263244);
+      const edge = (idxs) => {
+        const start = sideV.length / 3;
+        idxs.forEach((i) => {
+          const x = pos.getX(i), z = pos.getZ(i), y = pos.getY(i);
+          const col = y > 0.02 ? land : sea;
+          sideV.push(x, y, z, x, base, z);
+          sideC.push(col.r, col.g, col.b, bottom.r, bottom.g, bottom.b);
+        });
+        for (let k = 0; k < idxs.length - 1; k++) {
+          const a = start + k * 2, b = a + 2;
+          sideI.push(a, a + 1, b, b, a + 1, b + 1);
+        }
+      };
+      const row = (j) => Array.from({ length: mw }, (_, i) => j * mw + i);
+      const col = (i) => Array.from({ length: mh }, (_, j) => j * mw + i);
+      edge(row(0)); edge(row(mh - 1).reverse()); edge(col(0).reverse()); edge(col(mw - 1));
+      const sg = new THREE.BufferGeometry();
+      sg.setAttribute("position", new THREE.Float32BufferAttribute(sideV, 3));
+      sg.setAttribute("color", new THREE.Float32BufferAttribute(sideC, 3));
+      sg.setIndex(sideI);
+      sg.computeVertexNormals();
+      group.add(new THREE.Mesh(sg, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide })));
+      const bottomMesh = new THREE.Mesh(new THREE.PlaneGeometry(fr.W, fr.H).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x1d2735 }));
+      bottomMesh.position.y = base;
+      group.add(bottomMesh);
+
+      // Ombre douce sous le socle
+      const sc = document.createElement("canvas"); sc.width = sc.height = 128;
+      const g2 = sc.getContext("2d");
+      const grd = g2.createRadialGradient(64, 64, 10, 64, 64, 64);
+      grd.addColorStop(0, "rgba(10,20,40,.45)"); grd.addColorStop(1, "rgba(10,20,40,0)");
+      g2.fillStyle = grd; g2.fillRect(0, 0, 128, 128);
+      const shadow = new THREE.Mesh(new THREE.PlaneGeometry(fr.W * 1.5, fr.H * 1.5).rotateX(-Math.PI / 2),
+        new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false, fog: false }));
+      shadow.position.y = base - 1.5 * look.unit;
+      group.add(shadow);
+
+      const hAt = (u, v) => {
+        const x = Math.max(0, Math.min(mw - 1, u * (mw - 1))), y = Math.max(0, Math.min(mh - 1, v * (mh - 1)));
+        const x0 = Math.floor(x), y0 = Math.floor(y), x1 = Math.min(mw - 1, x0 + 1), y1 = Math.min(mh - 1, y0 + 1);
+        const fx = x - x0, fy = y - y0;
+        const a = hts[y0 * mw + x0], b = hts[y0 * mw + x1], c2 = hts[y1 * mw + x0], d = hts[y1 * mw + x1];
+        return (a * (1 - fx) + b * fx) * (1 - fy) + (c2 * (1 - fx) + d * fx) * fy;
+      };
+      const world = (lat, lon, lift = 0) => {
+        const [u, v] = fr.uv(lat, lon);
+        return new THREE.Vector3((u - 0.5) * fr.W, hAt(u, v) + lift, (v - 0.5) * fr.H);
+      };
+      const inside = (lat, lon) => { const [u, v] = fr.uv(lat, lon); return u >= 0 && u <= 1 && v >= 0 && v <= 1; };
+      const overlay = new THREE.Group();
+      group.add(overlay);
+      cache[r] = { group, overlay, frame: fr, world, inside, look, terrainMat };
+      return cache[r];
+    }
+
+    function legCurve(c, a, b, via) {
+      const pa = c.world(a.lat, a.lon, 0.25 * c.look.unit), pb = c.world(b.lat, b.lon, 0.25 * c.look.unit);
+      const air = via === "plane";
+      const water = via === "boat" || via === "cruise";
+      const n = 28, pts = [];
+      const dist = pa.distanceTo(pb);
+      for (let i = 0; i <= n; i++) {
+        const t = i / n;
+        const lat = a.lat + (b.lat - a.lat) * t, lon = a.lon + (b.lon - a.lon) * t;
+        const p = c.world(lat, lon, 0.3 * c.look.unit);
+        if (water) p.y = Math.max(0.18 * c.look.unit, p.y * 0.3);
+        if (air) p.y = Math.max(p.y, pa.y + (pb.y - pa.y) * t) + Math.sin(Math.PI * t) * Math.max(3, dist * 0.22);
+        else p.y += Math.sin(Math.PI * t) * Math.min(1.2, dist * 0.04);
+        pts.push(p);
+      }
+      return new THREE.CatmullRomCurve3(pts);
+    }
+
+    function tube(curve, radius, color, opacity) {
+      const m = new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity, depthWrite: opacity >= 1 });
+      return new THREE.Mesh(new THREE.TubeGeometry(curve, 96, radius, 6, false), m);
+    }
+
+    function dress(r) {
+      const c = cache[r];
+      const ov = c.overlay;
+      while (ov.children.length) { const o = ov.children.pop(); o.geometry?.dispose(); o.material?.dispose?.(); }
+      beacon = null; comet = null;
+      const u = c.look.unit;
+      const stops = sortedStops().filter((s) => typeof s.lat === "number");
+      const accent = new THREE.Color(cssVar("--accent") || "#5B45E0");
+      const amber = new THREE.Color("#FF8A1F");
+      const curIdx = stops.findIndex((s) => s.status === "current");
+      for (let i = 1; i < stops.length; i++) {
+        const a = stops[i - 1], b = stops[i];
+        if (!c.inside(a.lat, a.lon) || !c.inside(b.lat, b.lon)) continue;
+        if (a.lat === b.lat && a.lon === b.lon) continue;
+        const curve = legCurve(c, a, b, b.via);
+        const done = b.status === "done" || b.status === "current";
+        const isNext = curIdx >= 0 && i === curIdx + 1;
+        ov.add(tube(curve, (done ? 0.12 : 0.08) * u, done ? accent : isNext ? amber : 0xffffff, done ? 1 : isNext ? 0.95 : 0.75));
+        if (isNext) comet = { curve, mesh: null };
+      }
+      // Boucle de Ha Giang
+      if (c.inside(LOOP[0][0], LOOP[0][1])) {
+        const hg = stopById("hagiang");
+        const pts = [];
+        for (let i = 0; i < LOOP.length - 1; i++) {
+          const [la, lo] = LOOP[i], [lb, lob] = LOOP[i + 1];
+          for (let k = 0; k < 8; k++) { const t = k / 8; pts.push(c.world(la + (lb - la) * t, lo + (lob - lo) * t, 0.35 * u)); }
+        }
+        pts.push(pts[0].clone());
+        const loopDone = hg && hg.status === "done";
+        ov.add(tube(new THREE.CatmullRomCurve3(pts, true), 0.07 * u, loopDone ? accent : amber, 0.9));
+      }
+      // Balise « tu es ici »
+      const cs = stops[curIdx];
+      if (cs && c.inside(cs.lat, cs.lon)) {
+        const p = c.world(cs.lat, cs.lon);
+        const bg = new THREE.Group();
+        const colH = 6 * u;
+        const bc = document.createElement("canvas"); bc.width = 4; bc.height = 64;
+        const bx = bc.getContext("2d"); const lg = bx.createLinearGradient(0, 0, 0, 64);
+        lg.addColorStop(0, "rgba(255,138,31,0)"); lg.addColorStop(1, "rgba(255,138,31,.85)");
+        bx.fillStyle = lg; bx.fillRect(0, 0, 4, 64);
+        const colMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.2 * u, 0.2 * u, colH, 20, 1, true),
+          new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(bc), transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, fog: false }));
+        colMesh.position.y = colH / 2;
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.4 * u, 0.62 * u, 40).rotateX(-Math.PI / 2),
+          new THREE.MeshBasicMaterial({ color: amber, transparent: true, opacity: 0.9, depthWrite: false, side: THREE.DoubleSide }));
+        ring.position.y = 0.15;
+        bg.add(colMesh, ring);
+        bg.position.copy(p);
+        ov.add(bg);
+        beacon = { ring, col: colMesh };
+      }
+      if (comet) {
+        const m = new THREE.Mesh(new THREE.SphereGeometry(0.2 * u, 16, 12), new THREE.MeshBasicMaterial({ color: 0xfff2e0 }));
+        ov.add(m);
+        comet.mesh = m;
+      }
+      buildMarkers(r);
+    }
+
+    function buildMarkers(r) {
+      const c = cache[r];
+      labels.innerHTML = "";
+      markers = [];
+      const stops = sortedStops().filter((s) => typeof s.lat === "number" && c.inside(s.lat, s.lon));
+      const seen = new Set();
+      const prioOf = (s) => (s.status === "current" ? 0 : s.id === S.selected ? 1 : s.status === "next" ? 2 : s.status === "later" ? 3 : 4);
+      stops.forEach((s) => {
+        const key = s.lat.toFixed(2) + s.lon.toFixed(2);
+        if (seen.has(key) && s.status !== "current") return;
+        seen.add(key);
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = `mk ${s.status || "later"}${S.selected === s.id ? " sel" : ""}`;
+        el.dataset.stop = s.id;
+        el.setAttribute("aria-label", `${s.name}, ${range(s)}`);
+        el.innerHTML = `<span class="tag">${s.status === "current" ? "<small>ici</small>" : ""}${esc(s.short || s.name)}</span><span class="stem"></span><span class="dot"></span>`;
+        labels.appendChild(el);
+        markers.push({ el, pos: c.world(s.lat, s.lon, 0.2), prio: prioOf(s), w: 0, h: 0 });
+      });
+      POIS.filter((p) => p.r === r).forEach((p) => {
+        const el = document.createElement("div");
+        el.className = "mk poi";
+        el.innerHTML = `<span class="tag">${esc(p.name)}</span><span class="stem"></span><span class="dot"></span>`;
+        labels.appendChild(el);
+        markers.push({ el, pos: c.world(p.lat, p.lon, 0.2), prio: 6, w: 0, h: 0 });
+      });
+      markers.forEach((m) => { const b = m.el.getBoundingClientRect(); m.w = b.width; m.h = b.height; });
+      markers.sort((a, b) => a.prio - b.prio);
+    }
+
+    function updateMarkers() {
+      const W = window.innerWidth, H = window.innerHeight;
+      const placed = [];
+      for (const m of markers) {
+        tmp.copy(m.pos).project(camera);
+        const x = (tmp.x + 1) / 2 * W, y = (1 - tmp.y) / 2 * H;
+        const off = tmp.z > 1 || x < -40 || x > W + 40 || y < -40 || y > H + 40;
+        if (off) { m.el.style.visibility = "hidden"; continue; }
+        m.el.style.visibility = "visible";
+        m.el.style.transform = `translate3d(${(x - m.w / 2).toFixed(1)}px, ${(y - m.h + 6).toFixed(1)}px, 0)`;
+        const box = { l: x - m.w / 2, r: x + m.w / 2, t: y - m.h, b: y - 12 };
+        const hit = placed.some((p) => box.l < p.r && box.r > p.l && box.t < p.b && box.b > p.t);
+        m.el.classList.toggle("min", hit && m.prio > 0);
+        if (!hit || m.prio === 0) placed.push(box);
+      }
+    }
+
+    function loop(t) {
+      requestAnimationFrame(loop);
+      if (!ok || !cur) return;
+      frame++;
+      const idle = performance.now() - lastInteract > 6000 && !flight;
+      if (idle && frame % 2) return;
+      if (flight) {
+        const k = Math.min(1, (t - flight.t0) / flight.dur);
+        const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        controls.target.lerpVectors(flight.fromT, flight.toT, e);
+        camera.position.lerpVectors(flight.fromP, flight.toP, e);
+        if (k >= 1) flight = null;
+        clampTarget();
+      }
+      controls.update();
+      if (beacon) {
+        const s = 1 + ((t / 1600) % 1) * 1.6;
+        beacon.ring.scale.set(s, 1, s);
+        beacon.ring.material.opacity = 0.9 * (1 - ((t / 1600) % 1));
+      }
+      if (comet && comet.mesh) comet.mesh.position.copy(comet.curve.getPointAt((t / 2600) % 1));
+      renderer.render(scene, camera);
+      updateMarkers();
+    }
+
+    function place(target, dist, azimuth = 0, polar = 0.95, animate = true) {
+      const toT = target.clone();
+      const toP = new THREE.Vector3(
+        toT.x + dist * Math.sin(polar) * Math.sin(azimuth),
+        toT.y + dist * Math.cos(polar),
+        toT.z + dist * Math.sin(polar) * Math.cos(azimuth),
+      );
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!animate || reduce) { controls.target.copy(toT); camera.position.copy(toP); controls.update(); clampTarget(); return; }
+      flight = { fromT: controls.target.clone(), toT, fromP: camera.position.clone(), toP, t0: performance.now(), dur: 1100 };
+    }
+
+    async function show(r, focusId, animate = true) {
+      S.region = r;
+      document.querySelectorAll(".levels [data-region]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.region === r)));
+      if (!ok) { flatShow(r); return; }
+      $("mapLoading").hidden = false;
+      let c;
+      try { c = await build(r); } catch { $("mapLoading").textContent = "Relief indisponible"; return; }
+      if (S.region !== r) return;
+      $("mapLoading").hidden = true;
+      if (cur && cur !== r) scene.remove(cache[cur].group);
+      const first = cur !== r;
+      cur = r;
+      scene.add(c.group);
+      dress(r);
+      const look = LOOK[r];
+      controls.maxDistance = look.dist * 2.2;
+      controls.minDistance = 14 * look.unit;
+      const fs = focusId ? stopById(focusId) : currentStop();
+      if (fs && r !== "all" && c.inside(fs.lat, fs.lon)) place(c.world(fs.lat, fs.lon), look.focusDist, 0, 0.82, animate && !first);
+      else fit(r, animate && !first);
+      if (first) {
+        // Petit survol d'entrée
+        const t = controls.target.clone();
+        camera.position.add(new THREE.Vector3(0, look.dist * 0.5, look.dist * 0.4));
+        flight = { fromT: t, toT: t.clone(), fromP: camera.position.clone(), toP: camera.position.clone().sub(new THREE.Vector3(0, look.dist * 0.5, look.dist * 0.4)), t0: performance.now(), dur: 1400 };
+      }
+    }
+
+    // Cadre la caméra sur toutes les étapes (et repères) de la région
+    function fit(r, animate) {
+      const c = cache[r], look = LOOK[r];
+      const pts = sortedStops().filter((s) => typeof s.lat === "number" && c.inside(s.lat, s.lon)).map((s) => c.world(s.lat, s.lon));
+      POIS.filter((p) => p.r === r && r === "jp").forEach((p) => pts.push(c.world(p.lat, p.lon)));
+      if (!pts.length) { place(new THREE.Vector3(0, 0, 0), look.dist, 0, 0.8, animate); return; }
+      let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+      pts.forEach((p) => { x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); z0 = Math.min(z0, p.z); z1 = Math.max(z1, p.z); });
+      const m = 14 * look.unit;
+      const w = x1 - x0 + m * 2, h = z1 - z0 + m * 2;
+      const H = window.innerHeight;
+      const frac = isDesk() ? 1 : Math.max(0.3, (H - visibleSheet() - 80) / H);
+      const vf = (camera.fov * Math.PI) / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
+      const polar = 0.78;
+      const dW = (w / 2) / Math.tan(hf / 2) * (isDesk() ? (window.innerWidth / Math.max(300, window.innerWidth - 440)) : 1);
+      const dH = (h * Math.cos(polar) / 2) / Math.tan(vf / 2) / frac;
+      const dist = Math.max(dW, dH, look.dist * 0.55);
+      controls.maxDistance = Math.max(look.dist * 2.2, dist * 1.4);
+      place(new THREE.Vector3((x0 + x1) / 2, 0, (z0 + z1) / 2), dist, 0, polar, animate);
+    }
+
+    function focus(id) {
+      const s = stopById(id);
+      if (!s || typeof s.lat !== "number") return;
+      const r = regionOf(s);
+      S.selected = id;
+      if (r !== S.region || !ok || !cache[r] || cur !== r) { show(r, id); return; }
+      const c = cache[r];
+      buildMarkers(r);
+      place(c.world(s.lat, s.lon), LOOK[r].focusDist, 0, 0.82);
+    }
+
+    function refresh() {
+      if (ok && cur) dress(cur);
+      else if (!ok) flatShow(S.region);
+    }
+
+    /* ---- repli sans WebGL : image plate + marqueurs ---- */
+    let flatR = null;
+    function flatShow(r) {
+      flatR = r;
+      $("mapLoading").hidden = true;
+      canvas.hidden = true;
+      const img = $("flat");
+      img.hidden = false;
+      img.onload = flatLayout;
+      img.src = `relief/${r}-color.webp`;
+      img.alt = "Carte en relief";
+      flatLayout();
+    }
+    function flatLayout() {
+      if (!flatR) return;
+      const img = $("flat"); if (!img.naturalWidth) return;
+      const W = window.innerWidth, H = window.innerHeight - visibleSheet();
+      const k = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+      const w = img.naturalWidth * k, h = img.naturalHeight * k, x0 = (W - w) / 2, y0 = (H - h) / 2;
+      img.style.cssText = `object-fit:fill;left:${x0}px;top:${y0}px;width:${w}px;height:${h}px`;
+      const fr = frameOf(flatR);
+      labels.innerHTML = sortedStops().filter((s) => { const [u, v] = fr.uv(s.lat, s.lon); return u >= 0 && u <= 1 && v >= 0 && v <= 1; }).map((s) => {
+        const [u, v] = fr.uv(s.lat, s.lon);
+        return `<button type="button" class="mk ${s.status}" data-stop="${esc(s.id)}" style="transform:translate(calc(${(x0 + u * w).toFixed(1)}px - 50%), calc(${(y0 + v * h).toFixed(1)}px - 100%))"><span class="tag">${esc(s.short || s.name)}</span><span class="stem"></span><span class="dot"></span></button>`;
+      }).join("");
+    }
+
+    return { init, show, focus, refresh, layout: () => (ok ? layout() : flatLayout()), recenter: () => { const c = currentStop(); if (c) { S.selected = null; show(regionOf(c), c.id); } } };
+  })();
+
+  /* ================= panneau « Ici » ================= */
+  function nextBooking() {
+    const t = isoOf(todayDate());
+    return [...S.bookings].filter((b) => b.dateIso && b.dateIso >= t && b.status !== "achete")
+      .sort((a, b) => (a.dateIso + (a.time || "")).localeCompare(b.dateIso + (b.time || "")))[0] || null;
+  }
+  function nextBought() {
+    const t = isoOf(todayDate());
+    return [...S.bookings].filter((b) => b.dateIso && b.dateIso > t && b.status === "achete" && b.kind === "vol")
+      .sort((a, b) => (a.dateIso + (a.time || "")).localeCompare(b.dateIso + (b.time || "")))[0] || null;
+  }
+  const stampHTML = (s, cls, rot) => {
+    const d = s.start ? ddmm(s.start).replace("/", ".") : "";
+    return `<span class="stamp ${cls}" style="--r:${rot}deg"><span class="s1">${esc(s.short || s.name)}</span><span class="s2">${esc(s.country || "")}${d ? " · " + d : ""}</span></span>`;
+  };
+
+  function renderIci() {
+    const box = $("p-ici");
+    const stops = sortedStops();
+    const cur = currentStop();
+    if (!cur) { box.innerHTML = `<p class="kicker">Position</p><h2 class="big">À définir</h2><p class="local">Choisis ton étape en cours dans l'onglet Étapes.</p>`; return; }
+    const i = stops.indexOf(cur), next = stops[i + 1];
+    const t = todayDate(), sd = parseDay(cur.start);
+    const dayIn = sd ? dayDiff(sd, t) + 1 : null;
+    const nb = nextBooking(), nv = nextBought();
+    const todo = S.bookings.filter((b) => b.status === "a_acheter" || b.status === "inconnu");
+    const urgent = todo.filter((b) => b.dateIso && dayDiff(t, parseDay(b.dateIso)) <= 10);
+    const inDays = (iso) => { const n = dayDiff(t, parseDay(iso)); return n <= 0 ? "aujourd'hui" : n === 1 ? "demain" : `dans ${n} j`; };
+    const reached = stops.filter((s) => s.status === "done" || s.status === "current");
+    const left = Math.max(0, dayDiff(t, parseDay(TRIP_END)));
+
+    box.innerHTML = `
+      <div class="here"><span class="pulse" aria-hidden="true"></span>Tu es ici</div>
+      <h2 class="big">${esc(cur.name)}</h2>
+      ${cur.local ? `<p class="local">${esc(cur.local)}</p>` : ""}
+      <div class="chips">
+        <span class="chip">${esc(range(cur))}</span>
+        ${cur.tentative ? `<span class="chip tent">dates à confirmer</span>` : ""}
+        ${dayIn && dayIn > 0 && nightsOf(cur) ? `<span class="chip acc">jour ${dayIn} sur ${nightsOf(cur) + 1}</span>` : ""}
+      </div>
+      <div class="actions">
+        ${improveBtn(cur.id, false)}
+        ${next && S.canWrite && S.live ? `<button class="btn" type="button" data-act="next-ask">Étape suivante</button>` : ""}
+      </div>
+      ${S.confirmNext && next ? `<div class="confirm"><span>${esc(cur.name)} terminé, tu arrives à <b>${esc(next.name)}</b> ?</span><div class="row"><button class="btn small primary" type="button" data-act="next-yes">Oui, tamponner</button><button class="btn small ghost" type="button" data-act="next-no">Annuler</button></div></div>` : ""}
+      <div class="rows">
+        ${next ? `<button class="rowi" type="button" data-go-stop="${esc(next.id)}"><span class="ic acc">${icon(next.via || "next")}</span><span><span class="t">Ensuite · ${esc(next.name)}</span><span class="s">${esc(range(next))}${next.arrive ? " · " + esc(next.arrive) : ""}</span></span><span class="chev">${icon("chev")}</span></button>` : ""}
+        ${urgent.length ? `<button class="rowi" type="button" data-tab-link="billets"><span class="ic warn">${icon("alert")}</span><span><span class="t">${plural(urgent.length, "réservation à régler", "réservations à régler")}</span><span class="s">${esc(urgent.slice(0, 2).map((b) => b.label).join(" · "))}${urgent.length > 2 ? "…" : ""}</span></span><span class="r">${nb ? inDays(nb.dateIso) : ""}</span></button>` : ""}
+        ${nv ? `<button class="rowi" type="button" data-tab-link="billets"><span class="ic">${icon("plane")}</span><span><span class="t">${esc(nv.label)}</span><span class="s">${esc(longDay(nv.dateIso))}${nv.time ? " · " + esc(nv.time) : ""}${nv.ref ? " · " + esc(nv.ref) : ""}</span></span><span class="r">${inDays(nv.dateIso)}</span></button>` : ""}
+      </div>
+      <h3 class="sec">Progression</h3>
+      <div class="stats">
+        <div class="stat"><div class="v">${kmSoFar().toLocaleString("fr-FR")}</div><div class="k">km parcourus</div></div>
+        <div class="stat"><div class="v">${reached.length}<span style="color:var(--muted);font-size:18px">/${stops.length}</span></div><div class="k">étapes</div></div>
+        <div class="stat"><div class="v">${new Set(reached.map((s) => s.country)).size}<span style="color:var(--muted);font-size:18px">/3</span></div><div class="k">pays</div></div>
+        <div class="stat"><div class="v">${left}</div><div class="k">nuits avant Paris</div></div>
+      </div>
+      <h3 class="sec">Tampons <span>${reached.length} sur ${stops.length}</span></h3>
+      <div class="stamps">${stops.map((s, k) => stampHTML(s, s.status === "current" ? "now" : s.status === "done" ? "done" : "locked", ((k * 37) % 13) - 6)).join("")}</div>
+      ${STATIC ? `<p class="note" style="margin-top:14px">Vue publique : position estimée d'après les dates du plan (instantané du ${esc(STATIC.updatedLabel)}). Propositions de Claude, carnet et mise à jour des billets : <a href="${CLAUDE_URL}" target="_blank" rel="noopener">version Claude</a>.</p>`
+        : !S.live ? `<p class="note" style="margin-top:14px">${S.dbState === "loading" ? "Chargement de tes données…" : "Données en direct indisponibles ici : ouvre le carnet depuis claude.ai."}</p>` : ""}`;
+  }
+
+  /* ================= Étapes ================= */
+  const STATUS_LABEL = { done: "fait", current: "en cours", next: "prochaine", later: "à venir" };
+  const listBlock = (title, items, cls) => (items && items.length ? `<div class="blk"><div class="k">${title}</div><ul class="mini ${cls || ""}">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "");
+  function renderStops() {
+    const all = sortedStops(), stops = all.filter((s) => matches(s, S.find));
+    $("stopsHead").innerHTML = S.find ? `Résultats <span>${stops.length} sur ${all.length}</span>` : `Étapes <span>${plural(all.filter((s) => s.status === "done").length, "faite", "faites")}</span>`;
+    $("findEmpty").innerHTML = S.find && !stops.length
+      ? `<div class="empty">Aucune étape ne parle de « ${esc(S.find)} ».<br><br>${STATIC ? `<a class="btn small primary" href="${CLAUDE_URL}" target="_blank" rel="noopener">${icon("spark")}Demander à Claude</a>` : `<button class="btn small primary" type="button" data-act="ask-find">${icon("spark")}Demander à Claude</button>`}</div>` : "";
+    const byStop = {};
+    S.bookings.forEach((b) => { (byStop[b.stop] ||= []).push(b); });
+    $("stops").innerHTML = stops.map((s) => {
+      const st = s.status || "later";
+      const hl = (s.highlights || []).map((h) => `<li><b>${esc(h.title)}</b>${esc(h.detail || "")}</li>`).join("");
+      const bks = (byStop[s.id] || []).map((b) => `${b.label} — ${b.status === "achete" ? "acheté" + (b.ref ? " (" + b.ref + ")" : "") : b.status === "sur_place" ? "sur place" : b.status === "inconnu" ? "statut inconnu" : "à acheter"}`);
+      const nIdeas = S.ideas.filter((x) => x.stop === s.id && x.status !== "ecarte").length;
+      const editor = S.editing === s.id ? `<div class="editor">
+          <div class="fields">
+            <label class="f">Arrivée<input type="date" id="ed-start" value="${esc(s.start || "")}"></label>
+            <label class="f">Départ<input type="date" id="ed-end" value="${esc(s.end || "")}"></label>
+            <label class="f">Statut<select id="ed-status">${Object.entries(STATUS_LABEL).map(([k, v]) => `<option value="${k}" ${k === st ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+          </div>
+          <label class="f" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="ed-tent" ${s.tentative ? "checked" : ""}> Dates à confirmer</label>
+          <div class="row"><button class="btn small primary" type="button" data-act="ed-save" data-stop="${esc(s.id)}">Enregistrer</button><button class="btn small ghost" type="button" data-act="ed-cancel">Annuler</button></div>
+        </div>` : "";
+      return `<li class="stop ${st}" id="stop-${esc(s.id)}">
+        <span class="dot" aria-hidden="true"></span>
+        <details ${S.open.has(s.id) ? "open" : ""} data-stop="${esc(s.id)}">
+          <summary>
+            <span class="when">${s.via ? icon(s.via) : ""}${esc(range(s))}${nightsOf(s) ? " · " + plural(nightsOf(s), "nuit", "nuits") : ""}</span>
+            <span class="nm">${esc(s.name)}</span>
+            <span>${s.tentative ? '<span class="chip tent">à confirmer</span> ' : ""}<span class="chip ${st === "done" ? "ok" : st === "current" ? "warn" : st === "next" ? "acc" : ""}">${STATUS_LABEL[st] || st}</span></span>
+          </summary>
+          <div class="stopbody">
+            ${s.local ? `<div class="line">${esc(s.local)}</div>` : ""}
+            ${s.arrive ? `<div class="line"><b>Arriver</b> · ${esc(s.arrive)}</div>` : ""}
+            ${s.leave ? `<div class="line"><b>Repartir</b> · ${esc(s.leave)}</div>` : ""}
+            ${hl ? `<div class="blk"><div class="k">À faire</div><ul class="hl">${hl}</ul></div>` : ""}
+            ${listBlock("Manger, boire", s.food)}
+            ${listBlock("Pratique", s.practical)}
+            ${listBlock("Attention", s.watch, "warn")}
+            ${listBlock("À réserver", s.toBook, "warn")}
+            ${listBlock("Billets liés", bks)}
+            <div class="row">
+              ${STATIC ? improveBtn(s.id, true) : `<button class="btn small primary" type="button" data-act="improve" data-stop="${esc(s.id)}">${icon("spark")}Améliorer${nIdeas ? ` · ${nIdeas}` : ""}</button>`}
+              <button class="btn small" type="button" data-act="map" data-stop="${esc(s.id)}">Voir sur la carte</button>
+              ${S.canWrite && S.live && S.editing !== s.id ? `<button class="btn small ghost" type="button" data-act="edit" data-stop="${esc(s.id)}">Modifier</button>` : ""}
+            </div>
+            ${editor}
+          </div>
+        </details>
+      </li>`;
+    }).join("");
+  }
+
+  /* ================= Billets ================= */
+  const BK_STATUS = [["achete", "Acheté"], ["a_acheter", "À acheter"], ["sur_place", "Sur place"], ["inconnu", "?"]];
+  function renderBookings() {
+    const t = isoOf(todayDate());
+    const list = [...S.bookings].sort((a, b) => ((a.dateIso || "9") + (a.time || "")).localeCompare((b.dateIso || "9") + (b.time || "")));
+    const bought = list.filter((b) => b.status === "achete");
+    const todo = list.filter((b) => b.status === "a_acheter" || b.status === "inconnu");
+    const onsite = list.filter((b) => b.status === "sur_place");
+    const soon = todo.filter((b) => b.dateIso && dayDiff(parseDay(t), parseDay(b.dateIso)) <= 10);
+    const later = todo.filter((b) => !soon.includes(b));
+    const badge = $("bkBadge"); badge.hidden = !soon.length; badge.textContent = String(soon.length);
+    if (!S.bookings.length) {
+      $("bkTiles").innerHTML = "";
+      $("bkGroups").innerHTML = `<div class="empty">${S.dbState === "loading" ? "Chargement des billets…" : "Les billets s'affichent quand le carnet est ouvert dans Claude."}</div>`;
+      return;
+    }
+    $("bkTiles").innerHTML = `
+      <div class="tile warn"><div class="v">${soon.length}</div><div class="k">à régler sous 10 jours</div></div>
+      <div class="tile"><div class="v">${later.length + onsite.length}</div><div class="k">plus tard ou sur place</div></div>
+      <div class="tile ok"><div class="v">${bought.length}</div><div class="k">achetés</div></div>`;
+    const card = (b) => {
+      const d = parseDay(b.dateIso), n = d ? dayDiff(parseDay(t), d) : null;
+      return `<div class="tk" data-bk="${esc(b._id || b.id)}">
+        <div class="d">${d ? String(d.getDate()).padStart(2, "0") : "—"}<small>${d ? MONTHS[d.getMonth()] : ""}</small></div>
+        <div class="body">
+          <div class="lab">${icon(KIND_ICON[b.kind] || "ticket")}${esc(b.label)}</div>
+          <div class="sub">${[b.time, b.note].filter(Boolean).map(esc).join(" · ")}</div>
+          ${b.where || b.price ? `<div class="sub">${[b.price, b.where].filter(Boolean).map(esc).join(" · ")}</div>` : ""}
+          ${b.ref ? `<div class="sub">Réf. <span class="ref">${esc(b.ref)}</span> <button class="copy" type="button" data-copy="${esc(b.ref)}">Copier</button></div>` : ""}
+          ${n !== null && n >= 0 && n <= 10 && b.status !== "achete" ? `<div class="sub"><span class="chip warn">${n === 0 ? "aujourd'hui" : "dans " + plural(n, "jour", "jours")}</span></div>` : ""}
+        </div>
+        ${S.canWrite && S.live ? `<div class="ctl">
+          <div class="seg2" role="group" aria-label="Statut">${BK_STATUS.map(([k, v]) => `<button type="button" data-bkset="${k}" aria-pressed="${b.status === k}">${v}</button>`).join("")}</div>
+          <input class="refin" type="text" id="ref-${esc(b._id || b.id)}" placeholder="Réf." value="${esc(b.ref || "")}" data-bkref aria-label="Référence de réservation">
+        </div>` : ""}
+      </div>`;
+    };
+    const group = (title, arr) => (arr.length ? `<h3 class="sec">${title} <span>${arr.length}</span></h3><div class="tickets">${arr.map(card).join("")}</div>` : "");
+    $("bkGroups").innerHTML = group("À régler maintenant", soon) + group("À acheter plus tard", later) + group("Sur place", onsite) + group("Achetés", bought);
+  }
+
+  /* ================= Claude ================= */
+  const KIND_LABEL = { ajouter: "Ajouter", remplacer: "Remplacer", reordonner: "Réordonner", reserver: "Réserver", eviter: "Éviter", economiser: "Économiser", astuce: "Astuce" };
+  let askCtl = null, lastAnswer = null;
+  function renderAskControls() {
+    const sel = $("askStop"), cur = currentStop(), prev = sel.value;
+    sel.innerHTML = `<option value="">Tout le voyage</option>` + sortedStops().map((s) => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join("");
+    sel.value = prev || (cur ? cur.id : "");
+    const stops = sortedStops(), i = cur ? stops.indexOf(cur) : -1;
+    const nx = i >= 0 ? stops[i + 1] : null, nx2 = i >= 0 ? stops[i + 2] : null;
+    const chips = [];
+    if (cur) chips.push([`Que ne pas rater à ${cur.short || cur.name} d'ici la fin de l'étape ?`, cur.id]);
+    if (nx) chips.push([`Comment rejoindre ${nx.short || nx.name} au mieux ?`, nx.id]);
+    if (nx2) chips.push([`${nx2.short || nx2.name} : que réserver maintenant ?`, nx2.id]);
+    chips.push(["Où mon plan est-il le plus fragile ?", ""]);
+    chips.push(["Une idée pour gagner une demi-journée ?", ""]);
+    $("askChips").innerHTML = chips.map(([q, st]) => `<button type="button" class="qchip" data-chip="${esc(q)}" data-chip-stop="${esc(st)}">${esc(q)}</button>`).join("");
+  }
+  function tripContext(focusId) {
+    const stops = sortedStops().map((s) => {
+      const b = { id: s.id, nom: s.name, pays: s.country, dates: range(s), nuits: nightsOf(s), statut: STATUS_LABEL[s.status] || s.status, a_confirmer: !!s.tentative, arrivee_par: s.via };
+      if (s.id === focusId || s.status === "current" || s.status === "next") Object.assign(b, {
+        arriver: s.arrive, repartir: s.leave, a_faire: (s.highlights || []).map((h) => h.title + (h.detail ? " — " + h.detail : "")),
+        pratique: s.practical, attention: s.watch, a_reserver: s.toBook,
+      });
+      return b;
+    });
+    const billets = S.bookings.map((b) => ({ quoi: b.label, date: b.dateIso ? ddmm(b.dateIso) : "", heure: b.time || undefined, statut: b.status, ref: b.ref || undefined }));
+    const idees = S.ideas.filter((x) => x.status !== "ecarte").map((x) => ({ etape: x.stop, idee: x.title, statut: x.status }));
+    return JSON.stringify({ aujourdhui: isoOf(todayDate()), etapes: stops, billets, idees_deja_gardees: idees });
+  }
+  function askPrompt(q, focusId) {
+    const cur = currentStop(), focus = focusId ? stopById(focusId) : null;
+    return [
+      "Tu es le copilote de voyage d'Elouan : voyage solo, 23/09 → 27/10/2026, Vietnam puis Philippines puis Tokyo, sac cabine, budget routard confort, aime les paysages, la nourriture de rue et la moto en passager.",
+      `Aujourd'hui : ${longDay(isoOf(todayDate()))} 2026. Il est à ${cur ? cur.name : "une étape non renseignée"}.`,
+      focus ? `Étape visée : ${focus.name} (${range(focus)}).` : "La question porte sur tout le voyage.",
+      "", "Son plan, ses billets et ses idées déjà gardées (JSON) :", tripContext(focusId), "",
+      `Sa demande : « ${q} »`, "",
+      "Règles :",
+      "- Propose 3 à 6 améliorations concrètes, faisables depuis là où il est, compatibles avec les billets déjà achetés (leurs dates ne bougent pas).",
+      "- Chaque proposition dit quoi faire, quand, pourquoi c'est mieux que le plan actuel, et ce que ça coûte ou fait gagner en temps ou en argent.",
+      "- Tu n'as pas accès au web : ne donne ni horaire ni prix précis dont tu n'es pas sûr, et mets ce qui doit être vérifié dans « a_verifier ». N'invente pas d'adresse.",
+      "- Ne répète pas une idée déjà gardée. Français, tutoiement, phrases courtes.", "",
+      'Réponds uniquement avec un objet JSON : {"resume": "1 ou 2 phrases", "propositions": [{"titre": "...", "type": "ajouter|remplacer|reordonner|reserver|eviter|economiser|astuce", "etape": "<id d\'étape ou vide>", "quand": "...", "pourquoi": "...", "gain": "...", "effort": "faible|moyen|fort", "a_verifier": "... ou vide"}]}',
+    ].join("\n");
+  }
+  const SAMPLE_ERR = {
+    rate_limited: "Trop de demandes d'affilée : réessaie dans une minute.",
+    session_expired: "Ta session Claude a expiré : reconnecte-toi puis réessaie.",
+    refused: "Claude a décliné cette demande : reformule-la.",
+    invalid_json: "La réponse n'était pas lisible : relance la demande.",
+    empty_completion: "Aucune réponse : pose une question plus simple.",
+    prompt_too_large: "Trop de contexte : vise une étape précise.",
+  };
+  const SAMPLE_OFF = new Set(["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"]);
+  function setAskBusy(on, msg) {
+    $("askGo").hidden = on; $("askStop2").hidden = !on;
+    const st = $("askStatus"); st.hidden = !msg;
+    st.innerHTML = msg ? (on ? `<span class="spin" aria-hidden="true"></span>` : "") + esc(msg) : "";
+  }
+  async function runAsk(q, focusId) {
+    if (!q) { $("askQ").focus(); return; }
+    if (!sample) { setAskBusy(false, "Claude n'est pas disponible dans cette vue : ouvre le carnet depuis claude.ai."); return; }
+    askCtl?.abort();
+    const ctl = new AbortController(); askCtl = ctl;
+    setAskBusy(true, "Claude lit ton plan et réfléchit… (10 à 60 s)");
+    $("askOut").innerHTML = "";
+    try {
+      const res = await sample.json(askPrompt(q, focusId), { signal: ctl.signal, modelTier: "default" });
+      if (askCtl !== ctl) return;
+      lastAnswer = { q, focusId, resume: String(res?.resume || ""), props: Array.isArray(res?.propositions) ? res.propositions : [] };
+      setAskBusy(false, "");
+      renderAnswer();
+    } catch (e) {
+      if (askCtl !== ctl) return;
+      if (e?.code === "cancelled") { setAskBusy(false, "Demande arrêtée."); return; }
+      if (SAMPLE_OFF.has(e?.code)) { setAskBusy(false, "Claude n'est pas autorisé pour ce carnet dans cette vue."); return; }
+      setAskBusy(false, SAMPLE_ERR[e?.code] || "Connexion interrompue : relance la demande.");
+    }
+  }
+  function renderAnswer() {
+    if (!lastAnswer) return;
+    const kept = new Set(S.ideas.map((x) => x.title));
+    $("askOut").innerHTML = `${lastAnswer.resume ? `<p class="resume">${esc(lastAnswer.resume)}</p>` : ""}
+      <div class="props">${lastAnswer.props.map((p, i) => {
+        const st = stopById(String(p.etape || "")), isKept = kept.has(String(p.titre || ""));
+        return `<div class="prop">
+          <div class="top"><span class="chip acc">${esc(KIND_LABEL[p.type] || p.type || "Idée")}</span>${st ? `<span class="chip">${esc(st.short || st.name)}</span>` : ""}${p.effort ? `<span class="chip">effort ${esc(p.effort)}</span>` : ""}</div>
+          <div class="ttl">${esc(p.titre)}</div>
+          ${p.pourquoi ? `<div class="why">${esc(p.pourquoi)}</div>` : ""}
+          <div class="facts">${p.quand ? `<span><b>Quand</b> ${esc(p.quand)}</span>` : ""}${p.gain ? `<span><b>Gain</b> ${esc(p.gain)}</span>` : ""}</div>
+          ${p.a_verifier ? `<div class="verify">À vérifier : ${esc(p.a_verifier)}</div>` : ""}
+          ${S.live && S.canWrite ? `<div class="row"><button class="btn small ${isKept ? "" : "primary"}" type="button" data-keep="${i}" ${isKept ? "disabled" : ""}>${isKept ? "Gardée" : "Garder l'idée"}</button></div>` : ""}
+        </div>`;
+      }).join("")}</div>`;
+  }
+  function renderIdeas() {
+    const order = { adopte: 0, garde: 1, ecarte: 2 };
+    const list = [...S.ideas].sort((a, b) => (order[a.status] ?? 1) - (order[b.status] ?? 1) || String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    if (!list.length) { $("ideas").innerHTML = `<div class="empty">Les idées gardées s'accumulent ici. Claude en tient compte à la demande suivante.</div>`; return; }
+    $("ideas").innerHTML = list.map((x) => {
+      const st = stopById(x.stop);
+      return `<div class="idea ${esc(x.status)}" data-idea="${esc(x._id)}">
+        <div><div class="t">${esc(x.title)}</div><div class="s">${st ? esc(st.short || st.name) + " · " : ""}${esc(KIND_LABEL[x.kind] || "")}${x.why ? " · " + esc(x.why) : ""}</div></div>
+        ${S.canWrite && S.live ? `<div class="seg2" role="group" aria-label="Statut de l'idée"><button type="button" data-ideaset="adopte" aria-pressed="${x.status === "adopte"}">Adoptée</button><button type="button" data-ideaset="ecarte" aria-pressed="${x.status === "ecarte"}">Écartée</button></div>` : ""}
+      </div>`;
+    }).join("");
+  }
+
+  /* ================= Carnet ================= */
+  let pickedPhoto = null;
+  function renderJournalControls() {
+    const sel = $("jStop"), prev = sel.value, cur = currentStop();
+    sel.innerHTML = sortedStops().map((s) => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join("");
+    sel.value = prev || (cur ? cur.id : "");
+    if (!$("jDate").value) $("jDate").value = isoOf(todayDate());
+    $("jSave").disabled = !(S.live && S.canWrite);
+    $("jPhotoLbl").hidden = !assets;
+    $("jPolish").hidden = !sample;
+  }
+  function renderEntries() {
+    const list = [...S.journal].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    if (!list.length) { $("entries").innerHTML = `<div class="empty">${S.live ? "Pas encore de page. Une ligne par jour suffit." : "Le carnet s'affiche quand il est ouvert dans Claude."}</div>`; return; }
+    $("entries").innerHTML = list.map((e) => {
+      const st = stopById(e.stop);
+      return `<article class="entry">
+        ${e.photo ? `<img src="/_blob/${esc(e.photo)}" alt="Photo du ${esc(longDay(e.date))}${st ? " à " + esc(st.name) : ""}" loading="lazy">` : ""}
+        <div class="in"><div class="hd"><span class="date">${esc(longDay(e.date))}</span><span class="place">${esc(st ? st.name : "")}</span></div><p>${esc(e.text)}</p></div>
+      </article>`;
+    }).join("");
+  }
+  async function shrinkPhoto(file) {
+    try {
+      const bmp = await createImageBitmap(file);
+      const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      return await new Promise((res) => c.toBlob((b) => res(b || file), "image/jpeg", 0.82));
+    } catch { return file; }
+  }
+
+  function renderFooter() {
+    const upd = S.meta.updatedLabel ? ` Position mise à jour : ${esc(S.meta.updatedLabel)}.` : "";
+    $("colo").innerHTML = `
+      <div>${STATIC ? `Instantané public du ${esc(STATIC.updatedLabel)}, sans références de réservation. ` : ""}Données : dossier VOYAGE (plan du 20/09, relevés du 13 au 21/09) et boîte mail relue le 24/09.${STATIC ? "" : upd} Relief : tuiles d'élévation Terrarium (AWS Open Data).</div>
+      ${INSPIRATIONS.length ? `<div>Idées reprises de carnets open source :<ul>${INSPIRATIONS.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a> · ${esc(r.idea)}</li>`).join("")}</ul></div>` : ""}`;
+  }
+
+  /* ================= onglets ================= */
+  function setTab(tab, opts = {}) {
+    if (!["ici", "etapes", "billets", "claude", "carnet"].includes(tab)) tab = "ici";
+    S.tab = tab;
+    ls.set("carnet-tab2", tab);
+    document.querySelectorAll(".tabs [data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+    ["ici", "etapes", "billets", "claude", "carnet"].forEach((t) => { $("p-" + t).hidden = t !== tab; });
+    if (!opts.keepScroll) $("sheetBody").scrollTop = 0;
+    if (opts.raise && snap === "peek" && !isDesk()) setSnap("mid");
+  }
+
+  function renderAll() {
+    renderHud();
+    renderIci();
+    if (S.editing === null) renderStops();
+    renderBookings();
+    if (!STATIC) {
+      renderAskControls();
+      renderIdeas();
+      if (lastAnswer) renderAnswer();
+      renderJournalControls();
+      renderEntries();
+    }
+    renderFooter();
+  }
+
+  /* ================= écritures ================= */
+  let toastT = 0;
+  function toast(msg, bad) {
+    const el = $("toast");
+    el.textContent = msg; el.className = bad ? "bad" : ""; el.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, 2600);
+  }
+  async function safeWrite(fn, okMsg) {
+    try { await fn(); if (okMsg) toast(okMsg); return true; }
+    catch (e) {
+      if (e?.code === "invalid_argument") { S.canWrite = false; render(); toast("Ce carnet est en lecture seule pour toi.", true); }
+      else if (e?.code === "unavailable") toast("Réseau instable : l'enregistrement n'est pas passé, réessaie.", true);
+      else toast("Enregistrement impossible pour l'instant.", true);
+      return false;
+    }
+  }
+  async function advanceStop() {
+    const stops = sortedStops(), cur = currentStop();
+    if (!cur) return;
+    const next = stops[stops.indexOf(cur) + 1];
+    if (!next) return;
+    S.confirmNext = false;
+    const today = isoOf(todayDate());
+    await safeWrite(async () => {
+      await db.doc("stops/" + cur._id).update({ status: "done", end: cur.end && cur.end < today ? cur.end : today });
+      await db.doc("stops/" + next._id).update({ status: "current", ...(next.tentative || !next.start ? { start: today } : {}) });
+      const after = stops[stops.indexOf(next) + 1];
+      if (after && after.status === "later") await db.doc("stops/" + after._id).update({ status: "next" });
+      await db.doc("meta/trip").set({ current: next.id, updatedLabel: longDay(today) });
+    }, `Tampon ${cur.short || cur.name} posé. Bienvenue à ${next.short || next.name} !`);
+  }
+
+  /* ================= événements ================= */
+  document.addEventListener("click", async (ev) => {
+    const el = ev.target.closest("button, a");
+    if (!el) return;
+    if (el.closest("#grab") && $("grab").dataset.justDragged) { ev.preventDefault(); return; }
+    if (el.dataset.tab) { setTab(el.dataset.tab, { raise: true }); return; }
+    if (el.dataset.region) { S.selected = null; MAP.show(el.dataset.region); ls.set("carnet-region", el.dataset.region); return; }
+    if (el.id === "recenter") { MAP.recenter(); return; }
+    if (el.dataset.tabLink) { ev.preventDefault(); setTab(el.dataset.tabLink, { raise: true }); return; }
+    if (el.classList.contains("mk") && el.dataset.stop) {
+      const id = el.dataset.stop;
+      S.open.add(id); S.editing = null;
+      MAP.focus(id);
+      setTab("etapes", { raise: true });
+      renderStops();
+      requestAnimationFrame(() => document.getElementById("stop-" + id)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      return;
+    }
+    if (el.dataset.goStop) {
+      const id = el.dataset.goStop;
+      S.open.add(id); MAP.focus(id); setTab("etapes", { raise: true }); renderStops();
+      requestAnimationFrame(() => document.getElementById("stop-" + id)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      return;
+    }
+    const act = el.dataset.act;
+    if (act === "improve") {
+      const st = stopById(el.dataset.stop);
+      setTab("claude", { raise: true });
+      $("askStop").value = st ? st.id : "";
+      $("askQ").value = st ? `Comment améliorer mon étape ${st.name} (${range(st)}) ?` : "";
+      runAsk($("askQ").value, st ? st.id : "");
+      return;
+    }
+    if (act === "ask-find") {
+      setTab("claude", { raise: true });
+      $("askStop").value = ""; $("askQ").value = S.find;
+      runAsk(S.find, "");
+      return;
+    }
+    if (act === "map") { MAP.focus(el.dataset.stop); if (!isDesk()) setSnap("peek"); return; }
+    if (act === "next-ask") { S.confirmNext = true; renderIci(); return; }
+    if (act === "next-no") { S.confirmNext = false; renderIci(); return; }
+    if (act === "next-yes") { el.disabled = true; await advanceStop(); return; }
+    if (act === "edit") { S.editing = el.dataset.stop; S.open.add(el.dataset.stop); renderStops(); return; }
+    if (act === "ed-cancel") { S.editing = null; renderStops(); return; }
+    if (act === "ed-save") {
+      const s = stopById(el.dataset.stop); if (!s) return;
+      const body = { start: $("ed-start").value || null, end: $("ed-end").value || null, status: $("ed-status").value, tentative: $("ed-tent").checked };
+      if (body.start && body.end && body.end < body.start) { toast("Le départ est avant l'arrivée.", true); return; }
+      if (body.start && body.end) body.nights = dayDiff(parseDay(body.start), parseDay(body.end));
+      el.disabled = true;
+      const ok = await safeWrite(async () => {
+        if (body.status === "current") {
+          for (const o of S.stops) if (o.status === "current" && o.id !== s.id) await db.doc("stops/" + o._id).update({ status: "done" });
+          await db.doc("meta/trip").set({ current: s.id, updatedLabel: longDay(isoOf(todayDate())) });
+        }
+        await db.doc("stops/" + s._id).update(body);
+      }, "Étape mise à jour.");
+      if (ok) { S.editing = null; render(); } else el.disabled = false;
+      return;
+    }
+    if (el.dataset.copy) {
+      const v = el.dataset.copy;
+      try { await navigator.clipboard.writeText(v); toast(`${v} copié`); } catch { toast(`Référence : ${v}`); }
+      return;
+    }
+    if (el.dataset.bkset) {
+      const id = el.closest("[data-bk]").dataset.bk;
+      const b = S.bookings.find((x) => x._id === id);
+      if (!b || b.status === el.dataset.bkset) return;
+      const grp = el.closest(".seg2"); grp.querySelectorAll("button").forEach((x) => { x.disabled = true; });
+      await safeWrite(() => db.doc("bookings/" + b._id).update({ status: el.dataset.bkset }), "Billet mis à jour.");
+      grp.querySelectorAll("button").forEach((x) => { x.disabled = false; });
+      return;
+    }
+    if (el.dataset.chip) {
+      $("askQ").value = el.dataset.chip; $("askStop").value = el.dataset.chipStop || "";
+      runAsk(el.dataset.chip, el.dataset.chipStop || "");
+      return;
+    }
+    if (el.id === "askStop2") { askCtl?.abort(); return; }
+    if (el.dataset.keep !== undefined) {
+      const p = lastAnswer?.props[Number(el.dataset.keep)]; if (!p) return;
+      el.disabled = true;
+      const ok = await safeWrite(() => db.collection("ideas").add({
+        title: String(p.titre || "").slice(0, 300), kind: String(p.type || ""),
+        stop: String(p.etape || lastAnswer.focusId || ""), why: String(p.pourquoi || "").slice(0, 600),
+        when: String(p.quand || "").slice(0, 200), gain: String(p.gain || "").slice(0, 200),
+        verify: String(p.a_verifier || "").slice(0, 300), effort: String(p.effort || ""),
+        query: String(lastAnswer.q || "").slice(0, 300), status: "garde", createdAt: new Date().toISOString(),
+      }), "Idée gardée.");
+      if (!ok) el.disabled = false;
+      return;
+    }
+    if (el.dataset.ideaset) {
+      const id = el.closest("[data-idea]").dataset.idea;
+      const x = S.ideas.find((k) => k._id === id); if (!x) return;
+      const grp = el.closest(".seg2"); grp.querySelectorAll("button").forEach((k) => { k.disabled = true; });
+      await safeWrite(() => db.doc("ideas/" + id).update({ status: x.status === el.dataset.ideaset ? "garde" : el.dataset.ideaset }));
+      grp.querySelectorAll("button").forEach((k) => { k.disabled = false; });
+      return;
+    }
+    if (el.id === "jPolish") {
+      const txt = $("jText").value.trim();
+      if (!txt) { $("jText").focus(); return; }
+      if (!sample) return;
+      const st = stopById($("jStop").value), js = $("jStatus");
+      js.hidden = false; js.innerHTML = `<span class="spin" aria-hidden="true"></span>Claude met au propre…`;
+      el.disabled = true;
+      try {
+        const { text } = await sample(`Réécris ces notes de voyage en une courte entrée de carnet (40 à 120 mots), à la première personne, ton simple et vivant, sans rien inventer : garde uniquement les faits donnés. Lieu : ${st ? st.name : "?"}, date : ${longDay($("jDate").value)}. Réponds seulement avec le texte de l'entrée.\n\nNotes :\n${txt.slice(0, 4000)}`, { modelTier: "quick", cache: false });
+        $("jText").value = text.trim(); js.hidden = true;
+      } catch (e) {
+        js.textContent = SAMPLE_OFF.has(e?.code) ? "Claude n'est pas autorisé dans cette vue." : (SAMPLE_ERR[e?.code] || "Connexion interrompue : réessaie.");
+      } finally { el.disabled = false; }
+    }
+  });
+
+  let userToggle = null;
+  document.addEventListener("pointerdown", (ev) => { const sm = ev.target.closest("summary"); userToggle = sm ? sm.parentElement.dataset.stop : null; }, true);
+  document.addEventListener("keydown", (ev) => { const sm = ev.target.closest && ev.target.closest("summary"); if (sm && (ev.key === "Enter" || ev.key === " ")) userToggle = sm.parentElement.dataset.stop; }, true);
+  document.addEventListener("toggle", (ev) => {
+    const d = ev.target;
+    if (d.tagName !== "DETAILS" || !d.dataset.stop) return;
+    if (d.open) { S.open.add(d.dataset.stop); if (userToggle === d.dataset.stop) MAP.focus(d.dataset.stop); } else S.open.delete(d.dataset.stop);
+    userToggle = null;
+  }, true);
+
+  document.addEventListener("change", async (ev) => {
+    const el = ev.target;
+    if (el.matches("[data-bkref]")) {
+      const id = el.closest("[data-bk]").dataset.bk;
+      const b = S.bookings.find((x) => x._id === id);
+      const v = el.value.trim().toUpperCase();
+      if (!b || v === (b.ref || "")) return;
+      await safeWrite(() => db.doc("bookings/" + b._id).update({ ref: v, ...(v && b.status !== "achete" ? { status: "achete" } : {}) }), v ? "Référence enregistrée." : "Référence effacée.");
+    }
+    if (el.id === "jPhoto") {
+      const f = el.files && el.files[0]; pickedPhoto = f || null;
+      const prev = $("jPrev");
+      if (f) { prev.src = URL.createObjectURL(f); prev.hidden = false; prev.alt = "Aperçu de la photo"; } else prev.hidden = true;
+    }
+  });
+
+  let findT = 0;
+  $("findQ").addEventListener("input", (ev) => { clearTimeout(findT); findT = setTimeout(() => { S.find = ev.target.value.trim(); renderStops(); }, 120); });
+  $("askForm").addEventListener("submit", (ev) => { ev.preventDefault(); runAsk($("askQ").value.trim(), $("askStop").value); });
+  $("jForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const text = $("jText").value.trim();
+    if (!text && !pickedPhoto) { $("jText").focus(); return; }
+    if (!db) return;
+    const js = $("jStatus");
+    $("jSave").disabled = true;
+    let photo = null, photoFailed = false;
+    if (pickedPhoto && assets) {
+      js.hidden = false; js.innerHTML = `<span class="spin" aria-hidden="true"></span>Envoi de la photo…`;
+      try { const blob = await shrinkPhoto(pickedPhoto); photo = (await assets.upload(blob, { type: blob.type || "image/jpeg" })).id; }
+      catch (e) { photoFailed = true; js.textContent = e?.code === "quota_or_state" ? "Espace photo plein : la page part sans photo." : "La photo n'est pas passée : la page part sans photo."; }
+    }
+    const ok = await safeWrite(() => db.collection("journal").add({
+      date: $("jDate").value || isoOf(todayDate()), stop: $("jStop").value, text: text.slice(0, 8000), photo, createdAt: new Date().toISOString(),
+    }), "Ajouté au carnet.");
+    $("jSave").disabled = false;
+    if (ok) { $("jText").value = ""; $("jPhoto").value = ""; pickedPhoto = null; $("jPrev").hidden = true; if (!photoFailed) js.hidden = true; }
+  });
+  window.addEventListener("resize", () => setSnap(snap, false));
+
+  /* ================= démarrage ================= */
+  if (STATIC) S.stops = statusByDate(STATIC.stops);
+  const h0 = location.hash.slice(1);
+  setTab(["ici", "etapes", "billets", "claude", "carnet"].includes(h0) ? h0 : (ls.get("carnet-tab2") || "ici"), { keepScroll: true });
+  setSnap(snap, false);
+  const cur0 = currentStop();
+  if (cur0) S.open.add(cur0.id);
+  renderAll();
+  const mapOk = MAP.init();
+  MAP.show(ls.get("carnet-region") && ls.get("carnet-region") !== regionOf(cur0 || {}) ? regionOf(cur0 || { lat: 21, lon: 105.8 }) : regionOf(cur0 || { lat: 21, lon: 105.8 }), null, false);
+  if (!mapOk) $("mapLoading").hidden = true;
+
+  const toStop = (d) => ({ ...d.data(), _id: d.id, id: d.data().id || d.id });
+  const toRow = (d) => ({ ...d.data(), _id: d.id });
+  let mapSig = "";
+  async function boot() {
+    if (STATIC) {
+      ["askForm", "askOut", "ideasHead", "ideas", "jForm", "entries"].forEach((id) => { const e = $(id); if (e) e.hidden = true; });
+      ["claudeStatic", "carnetStatic"].forEach((id) => { $(id).hidden = false; });
+      return;
+    }
+    if (!window.claude || typeof window.claude.use !== "function") { S.dbState = "off"; render(); return; }
+    const [dbNs, sampleNs, userNs, assetsNs] = await Promise.all(["db", "sample", "user", "assets"].map((n) => window.claude.use(n).catch(() => null)));
+    db = dbNs; sample = sampleNs; assets = assetsNs;
+    if (userNs) { try { if ((await userNs.can("data.write")) === false) S.canWrite = false; } catch { /* rien dit */ } }
+    if (!db) { S.dbState = "off"; render(); return; }
+    let first = true;
+    db.collection("stops").onSnapshot((snap) => {
+      if (!snap.empty) {
+        S.stops = snap.docs.map(toStop); S.live = true; S.dbState = "live";
+        if (first) { first = false; const c = currentStop(); if (c) S.open.add(c.id); }
+        const sig = sortedStops().map((s) => s.id + s.status + s.lat + s.lon + s.via).join("|");
+        if (sig !== mapSig) { mapSig = sig; MAP.refresh(); }
+      } else if (!snap.metadata.fromCache) S.dbState = "empty";
+      render();
+    }, () => { S.dbState = "off"; S.live = false; render(); });
+    db.collection("bookings").onSnapshot((snap) => { S.bookings = snap.docs.map(toRow); render(); }, () => {});
+    db.collection("ideas").onSnapshot((snap) => { S.ideas = snap.docs.map(toRow); render(); }, () => {});
+    db.collection("journal").onSnapshot((snap) => { S.journal = snap.docs.map(toRow); render(); }, () => {});
+    db.doc("meta/trip").onSnapshot((d) => { S.meta = d.exists ? { ...d.data() } : {}; render(); }, () => {});
+  }
+  boot();
+})();
+</script>
+
+</body>
+</html>
