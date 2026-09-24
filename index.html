@@ -298,8 +298,8 @@
   .rowi .ic svg { width: 19px; height: 19px; }
   .rowi .ic.acc { background: var(--accent-soft); color: var(--accent); }
   .rowi .ic.warn { background: var(--lantern-soft); color: var(--lantern); }
-  .rowi .t { font-weight: 700; font-size: 15px; line-height: 1.25; }
-  .rowi .s { font-size: 13px; color: var(--muted); margin-top: 1px; }
+  .rowi .t { display: block; font-weight: 700; font-size: 15px; line-height: 1.25; }
+  .rowi .s { display: block; font-size: 13px; color: var(--muted); margin-top: 1px; }
   .rowi .r { font-family: var(--mono); font-size: 12.5px; color: var(--muted); white-space: nowrap; }
   .rowi .chev { color: var(--muted); }
 
@@ -402,10 +402,10 @@
   .tk .ref { font-family: var(--mono); font-size: 13px; color: var(--ink); }
   .tk .ctl { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding-top: 9px; border-top: 1px solid var(--line); }
   .seg2 { display: inline-flex; background: var(--later-soft); border-radius: 10px; padding: 3px; gap: 2px; }
-  .seg2 button { border: 0; background: transparent; padding: 5px 9px; border-radius: 8px; font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; }
+  .seg2 button { border: 0; background: transparent; min-height: 38px; padding: 8px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 700; color: var(--muted); cursor: pointer; }
   .seg2 button[aria-pressed="true"] { background: var(--paper); color: var(--ink); box-shadow: 0 1px 4px rgba(15, 23, 40, .12); }
   .tk .refin { width: 118px; min-height: 36px; padding: 5px 9px; font-family: var(--mono); font-size: 14px; text-transform: uppercase; border-radius: 10px; }
-  .copy { border: 0; background: var(--later-soft); border-radius: 7px; padding: 3px 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--ink); }
+  .copy { border: 0; background: var(--later-soft); border-radius: 8px; min-height: 34px; padding: 6px 12px; margin-left: 4px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--ink); }
 
   /* Claude */
   .ask { display: grid; gap: 10px; }
@@ -742,7 +742,7 @@
   const nightsOf = (s) => (typeof s.nights === "number" ? s.nights : (s.start && s.end ? Math.max(0, dayDiff(parseDay(s.start), parseDay(s.end))) : 0));
   const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
   const sortedStops = () => [...S.stops].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  const currentStop = () => sortedStops().find((s) => s.status === "current") || null;
+  const currentStop = () => sortedStops().find((s) => s.status === "current") || (S.meta && S.meta.current ? stopById(S.meta.current) : null) || null;
   const stopById = (id) => S.stops.find((s) => s.id === id);
   const norm = (v) => String(v ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase();
   const matches = (s, q) => {
@@ -1370,7 +1370,7 @@
       ${S.confirmNext && next ? `<div class="confirm"><span>${esc(cur.name)} terminé, tu arrives à <b>${esc(next.name)}</b> ?</span><div class="row"><button class="btn small primary" type="button" data-act="next-yes">Oui, tamponner</button><button class="btn small ghost" type="button" data-act="next-no">Annuler</button></div></div>` : ""}
       <div class="rows">
         ${next ? `<button class="rowi" type="button" data-go-stop="${esc(next.id)}"><span class="ic acc">${icon(next.via || "next")}</span><span><span class="t">Ensuite · ${esc(next.name)}</span><span class="s">${esc(range(next))}${next.arrive ? " · " + esc(next.arrive) : ""}</span></span><span class="chev">${icon("chev")}</span></button>` : ""}
-        ${urgent.length ? `<button class="rowi" type="button" data-tab-link="billets"><span class="ic warn">${icon("alert")}</span><span><span class="t">${plural(urgent.length, "réservation à régler", "réservations à régler")}</span><span class="s">${esc(urgent.slice(0, 2).map((b) => b.label).join(" · "))}${urgent.length > 2 ? "…" : ""}</span></span><span class="r">${nb ? inDays(nb.dateIso) : ""}</span></button>` : ""}
+        ${urgent.length ? `<button class="rowi" type="button" data-tab-link="billets"><span class="ic warn">${icon("alert")}</span><span><span class="t">${plural(urgent.length, "réservation à régler", "réservations à régler")}</span><span class="s">${esc(urgent.slice(0, 2).map((b) => b.label).join(" · "))}${urgent.length > 2 ? "…" : ""}</span></span><span class="r">${(() => { const u = urgent.filter((x) => x.dateIso >= isoOf(t)).sort((x, y) => x.dateIso.localeCompare(y.dateIso))[0]; return u ? inDays(u.dateIso) : ""; })()}</span></button>` : ""}
         ${nv ? `<button class="rowi" type="button" data-tab-link="billets"><span class="ic">${icon("plane")}</span><span><span class="t">${esc(nv.label)}</span><span class="s">${esc(longDay(nv.dateIso))}${nv.time ? " · " + esc(nv.time) : ""}${nv.ref ? " · " + esc(nv.ref) : ""}</span></span><span class="r">${inDays(nv.dateIso)}</span></button>` : ""}
       </div>
       <h3 class="sec">Progression</h3>
@@ -1678,12 +1678,12 @@
     if (!next) return;
     S.confirmNext = false;
     const today = isoOf(todayDate());
-    await safeWrite(async () => {
-      await db.doc("stops/" + cur._id).update({ status: "done", end: cur.end && cur.end < today ? cur.end : today });
+    return safeWrite(async () => {
+      await db.doc("meta/trip").set({ current: next.id, updatedLabel: longDay(today) });
       await db.doc("stops/" + next._id).update({ status: "current", ...(next.tentative || !next.start ? { start: today } : {}) });
+      await db.doc("stops/" + cur._id).update({ status: "done", end: cur.end && cur.end < today ? cur.end : today });
       const after = stops[stops.indexOf(next) + 1];
       if (after && after.status === "later") await db.doc("stops/" + after._id).update({ status: "next" });
-      await db.doc("meta/trip").set({ current: next.id, updatedLabel: longDay(today) });
     }, `Tampon ${cur.short || cur.name} posé. Bienvenue à ${next.short || next.name} !`);
   }
 
@@ -1694,7 +1694,7 @@
     if (el.closest("#grab") && $("grab").dataset.justDragged) { ev.preventDefault(); return; }
     if (el.dataset.tab) { setTab(el.dataset.tab, { raise: true }); return; }
     if (el.dataset.region) { S.selected = null; MAP.show(el.dataset.region); ls.set("carnet-region", el.dataset.region); return; }
-    if (el.id === "recenter") { MAP.recenter(); return; }
+    if (el.id === "recenter") { const c = currentStop(); if (c) ls.set("carnet-region", regionOf(c)); MAP.recenter(); return; }
     if (el.dataset.tabLink) { ev.preventDefault(); setTab(el.dataset.tabLink, { raise: true }); return; }
     if (el.classList.contains("mk") && el.dataset.stop) {
       const id = el.dataset.stop;
@@ -1729,7 +1729,7 @@
     if (act === "map") { MAP.focus(el.dataset.stop); if (!isDesk()) setSnap("peek"); return; }
     if (act === "next-ask") { S.confirmNext = true; renderIci(); return; }
     if (act === "next-no") { S.confirmNext = false; renderIci(); return; }
-    if (act === "next-yes") { el.disabled = true; await advanceStop(); return; }
+    if (act === "next-yes") { el.disabled = true; const ok = await advanceStop(); if (!ok) renderIci(); return; }
     if (act === "edit") { S.editing = el.dataset.stop; S.open.add(el.dataset.stop); renderStops(); return; }
     if (act === "ed-cancel") { S.editing = null; renderStops(); return; }
     if (act === "ed-save") {
@@ -1827,7 +1827,8 @@
     if (el.id === "jPhoto") {
       const f = el.files && el.files[0]; pickedPhoto = f || null;
       const prev = $("jPrev");
-      if (f) { prev.src = URL.createObjectURL(f); prev.hidden = false; prev.alt = "Aperçu de la photo"; } else prev.hidden = true;
+      if (prev.src.startsWith("blob:")) URL.revokeObjectURL(prev.src);
+      if (f) { prev.src = URL.createObjectURL(f); prev.hidden = false; prev.alt = "Aperçu de la photo"; } else { prev.removeAttribute("src"); prev.hidden = true; }
     }
   });
 
@@ -1851,7 +1852,7 @@
       date: $("jDate").value || isoOf(todayDate()), stop: $("jStop").value, text: text.slice(0, 8000), photo, createdAt: new Date().toISOString(),
     }), "Ajouté au carnet.");
     $("jSave").disabled = false;
-    if (ok) { $("jText").value = ""; $("jPhoto").value = ""; pickedPhoto = null; $("jPrev").hidden = true; if (!photoFailed) js.hidden = true; }
+    if (ok) { $("jText").value = ""; $("jPhoto").value = ""; pickedPhoto = null; if ($("jPrev").src.startsWith("blob:")) URL.revokeObjectURL($("jPrev").src); $("jPrev").removeAttribute("src"); $("jPrev").hidden = true; if (!photoFailed) js.hidden = true; }
   });
   window.addEventListener("resize", () => setSnap(snap, false));
 
@@ -1864,7 +1865,8 @@
   if (cur0) S.open.add(cur0.id);
   renderAll();
   const mapOk = MAP.init();
-  MAP.show(ls.get("carnet-region") && ls.get("carnet-region") !== regionOf(cur0 || {}) ? regionOf(cur0 || { lat: 21, lon: 105.8 }) : regionOf(cur0 || { lat: 21, lon: 105.8 }), null, false);
+  const r0 = ls.get("carnet-region");
+  MAP.show(REGIONS[r0] ? r0 : regionOf(cur0 || { lat: 21, lon: 105.8 }), null, false);
   if (!mapOk) $("mapLoading").hidden = true;
 
   const toStop = (d) => ({ ...d.data(), _id: d.id, id: d.data().id || d.id });
